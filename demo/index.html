@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ft-winter — демо</title>
+<title>site-holidays — демо</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000'/%3E%3C/svg%3E">
 <style>
   :root { color-scheme: dark; }
@@ -28,12 +28,12 @@
 <body>
 <header>
   <span class="logo" data-winter-logo="#ff4f12"><span>&gt;&gt;</span>FT<span>_</span></span>
-  <nav><a href="#">ПРОЕКТЫ</a><a href="#">СВЯЗЬ</a><a href="#">МЕРЧ</a><button data-winter-egg="" type="button" tabindex="-1" aria-label="Зимний режим"></button></nav>
+  <nav><a href="#">ПРОЕКТЫ</a><a href="#">СВЯЗЬ</a><a href="#">МЕРЧ</a><button data-holiday-egg="winter" type="button" tabindex="-1" aria-label="Праздничный режим"></button></nav>
 </header>
 <main>
   <section class="card">
-    <h1>Демо ft-winter</h1>
-    <p>Страница для проверки плагина. Зима включена параметром <code>?winter=1</code>; невидимая пасхалка — справа от «МЕРЧ».
+    <h1>Демо site-holidays</h1>
+    <p>Страница для проверки плагина. Праздник включается сам по дате; для проверки — <code>?holiday=winter</code>. Невидимая пасхалка — справа от «МЕРЧ».
        Внизу страницы — сцена с ёлкой: подарки и снеговиков можно таскать мышкой, двойной клик по подарку его открывает.</p>
     <div class="btns">
       <button class="b" onclick="ftWinter.event('tea')">Чаепитие</button>
@@ -58,7 +58,6 @@
   <section class="card" style="min-height: 900px">Длинный блок, чтобы было что прокручивать: снег двигается вместе со страницей.</section>
 </main>
 <footer><span class="logo" data-winter-logo="#ff4f12"><span>&gt;&gt;</span>FT<span>_</span></span> · футер</footer>
-<script>window.FT_WINTER = { img: '../img/' };</script>
-<script src="../js/ft-winter.js" defer></script>
+<script src="../site-holidays.js" defer></script>
 </body>
 </html>

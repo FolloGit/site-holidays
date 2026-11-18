@@ -1,13 +1,14 @@
 /*!
- * ft-winter.js 2.0.0 — зимний режим сайта (плагин FolloTeam): снег, сугробы на блоках, гирлянда,
+ * site-holidays · holidays/winter.js 2.0.0 — зимний режим сайта: снег, сугробы на блоках, гирлянда,
  * новогодний логотип, сцена с ёлкой внизу, гномики со случайными событиями и мини-игра.
- * Исходник плагина и документация: Folloteam/ft-winter (README.md). На сайты кладётся копия этого файла.
+ * Модуль пакета site-holidays: подключается загрузчиком site-holidays.js (он сам решает, когда нужна зима).
+ * Исходник и документация — репозиторий site-holidays (README.md); на сайты кладётся копия.
  *
  * Скрипт полностью самостоятельный: ничего не знает о вёрстке сайта и сам находит,
  * на что может лечь снег (кнопки, карточки, панели, картинки), с учётом скруглённых углов.
  * Новые страницы подхватываются автоматически — достаточно подключить скрипт:
  *
- *   <script src="assets/js/ft-winter.js" defer></script>
+ *   <script src="assets/holidays/site-holidays.js" defer></script>   (загрузчик подгрузит этот модуль)
  *
  * Когда работает: с 1 декабря по конец февраля (по часам посетителя).
  *   ?winter=1 / ?winter=0 в адресе — включить / выключить принудительно (для проверки);
@@ -41,7 +42,7 @@
   window.__ftWinter = true;
 
   var SCRIPT = document.currentScript;
-  var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/js\/ft-winter\.js.*$/, '') : 'assets/';
+  var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/holidays\/winter\.js.*$/, '') : 'assets/holidays/';
   var CFG = {
     months: [12, 1, 2],
     img: BASE + 'img/',                 // где лежат картинки плагина
@@ -57,6 +58,8 @@
 
   /* ---------- когда включаться ---------- */
   var q = /[?&]winter=(0|1)/.exec(location.search);
+  var qh = /[?&]holiday=([a-z0-9_-]+)/.exec(location.search);      // ?holiday=winter / ?holiday=off от загрузчика
+  if (!q && qh) q = [qh[0], qh[1] === 'winter' ? '1' : '0'];
   var inSeason = CFG.months.indexOf(new Date().getMonth() + 1) >= 0;
   var forceGnomes = /[?&]gnomes=1/.test(location.search);
   function ls(key) {
@@ -79,13 +82,13 @@
   /* ---------- пасхалка: [data-winter-egg] ---------- */
   (function installEgg() {
     var st = document.createElement('style');
-    st.textContent = '[data-winter-egg]{position:relative;align-self:center;display:inline-block;flex:none;width:28px;height:28px;margin:-6px 0 -6px -30px;padding:0;border:0;background:transparent;cursor:default;vertical-align:middle;-webkit-tap-highlight-color:transparent}' +
-      '[data-winter-egg]:focus{outline:none}' +
-      '[data-winter-egg]::after{content:"\\2744\\FE0E";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5b96f5;font:16px/1 system-ui,sans-serif;opacity:0;transform:scale(.3) rotate(-120deg);transition:opacity .35s,transform .5s cubic-bezier(.2,1.6,.4,1);text-shadow:0 0 10px rgba(91,150,245,.85);pointer-events:none}' +
-      'html.ft-winter-on [data-winter-egg]::after{opacity:1;transform:none}';
+    st.textContent = '[data-winter-egg],[data-holiday-egg="winter"]{position:relative;align-self:center;display:inline-block;flex:none;width:28px;height:28px;margin:-6px 0 -6px -30px;padding:0;border:0;background:transparent;cursor:default;vertical-align:middle;-webkit-tap-highlight-color:transparent}' +
+      '[data-winter-egg]:focus,[data-holiday-egg]:focus{outline:none}' +
+      '[data-winter-egg]::after,[data-holiday-egg="winter"]::after{content:"\\2744\\FE0E";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#5b96f5;font:16px/1 system-ui,sans-serif;opacity:0;transform:scale(.3) rotate(-120deg);transition:opacity .35s,transform .5s cubic-bezier(.2,1.6,.4,1);text-shadow:0 0 10px rgba(91,150,245,.85);pointer-events:none}' +
+      'html.ft-winter-on [data-winter-egg]::after,html.ft-winter-on [data-holiday-egg="winter"]::after{opacity:1;transform:none}';
     (document.head || document.documentElement).appendChild(st);
     document.addEventListener('click', function (e) {
-      var t = e.target && e.target.closest && e.target.closest('[data-winter-egg]');
+      var t = e.target && e.target.closest && e.target.closest('[data-winter-egg],[data-holiday-egg="winter"]');
       if (!t) return;
       e.preventDefault(); e.stopPropagation();
       setOn(!running);
