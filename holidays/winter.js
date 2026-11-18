@@ -1,40 +1,49 @@
 /*!
- * site-holidays · holidays/winter.js 2.0.0 — зимний режим сайта: снег, сугробы на блоках, гирлянда,
- * новогодний логотип, сцена с ёлкой внизу, гномики со случайными событиями и мини-игра.
- * Модуль пакета site-holidays: подключается загрузчиком site-holidays.js (он сам решает, когда нужна зима).
- * Исходник и документация — репозиторий site-holidays (README.md); на сайты кладётся копия.
+ * site-holidays · holidays/winter.js 2.0.0
+ * Зимний режим сайта / Winter mode for websites — FolloTeam · https://folloteam.ru
  *
- * Скрипт полностью самостоятельный: ничего не знает о вёрстке сайта и сам находит,
- * на что может лечь снег (кнопки, карточки, панели, картинки), с учётом скруглённых углов.
- * Новые страницы подхватываются автоматически — достаточно подключить скрипт:
+ * RU  Снег, сугробы на блоках, гирлянда, новогодний логотип, сцена с ёлкой внизу,
+ *     гномики со случайными событиями и мини-игра. Модуль пакета site-holidays:
+ *     его подгружает загрузчик site-holidays.js, когда нужна зима (1 декабря – конец февраля).
+ *     Скрипт ничего не знает о вёрстке сайта: сам находит, на что ложится снег (кнопки, карточки,
+ *     панели, картинки), учитывает скругления углов. Новые страницы подхватываются автоматически.
  *
- *   <script src="assets/holidays/site-holidays.js" defer></script>   (загрузчик подгрузит этот модуль)
+ * EN  Snow, snow piles on page blocks, a garland, a New Year logo, a scene with a tree at the bottom,
+ *     gnomes with random events and a mini-game. A module of the site-holidays package: the
+ *     site-holidays.js loader pulls it in when winter is due (December 1 – end of February).
+ *     The script knows nothing about the site's markup: it finds where snow can settle (buttons,
+ *     cards, panels, images) on its own and respects rounded corners. New pages just work.
  *
- * Когда работает: с 1 декабря по конец февраля (по часам посетителя).
- *   ?winter=1 / ?winter=0 в адресе — включить / выключить принудительно (для проверки);
- *   ?gnomes=1 — гномики прибегают лепить снеговика сразу, как только видна сцена внизу.
- * Кнопка-снежинка в левом нижнем углу выключает режим (запоминается в браузере).
- * Пасхалка: любой элемент с атрибутом data-winter-egg (на сайте — невидимая кнопка справа от «МЕРЧ»)
- * включает и выключает зиму в любое время года; когда зима включена, в нём горит голубая снежинка.
+ * Подключение / Include:   <script src="assets/holidays/site-holidays.js" defer></script>
  *
- * Необязательные настройки (до подключения скрипта):
- *   window.FT_WINTER = {
- *     months: [12, 1, 2],              // месяцы работы
- *     img: 'assets/img/',              // папка с картинками плагина (по умолчанию — рядом с js/: ../img/)
- *     favicon: 'assets/img/x.svg',     // новогодняя иконка вкладки (false — не менять)
- *     logo: false,                     // не подменять логотип
- *     garland: 'header',               // под каким элементом висит гирлянда
- *     ignore: '[data-winter-ignore]',  // элементы, на которые снег не ложится
- *     maxFlakes: 260                   // снежинок в сильный снегопад на экране 1440×900
- *   };
- * Атрибут data-winter-ignore на любом элементе — снег на нём не копится.
- * Логотип: элемент data-winter-logo="#акцент" с текстовым знаком «>>FT_» зимой подменяется новогодним
- * (шапка Санты / олени / гирлянда — случайно при каждом заходе); оранжевый в знаке перекрашивается в акцент.
- * События сцены идут сами случайно: гномики лепят и чинят снеговиков, играют в снежки, катаются с горки,
- * шалят, меняются подарками, пьют чай с самоваром, подбирают добычу из подарков; в полночь отрывают листок
- * календаря; пролетает Санта; в новогоднюю ночь — гуляния и салют.
- * Консоль: ftWinter.on() / off() / event('tea') / events() / openGift() / logo('santa') /
- *          weather('calm'|'snow'|'blizzard') / sim(кадров) / state() / version.
+ * Адрес / URL:
+ *   ?holiday=winter | ?holiday=off  — включить / выключить (from the loader) · force on / off
+ *   ?winter=1 | ?winter=0           — то же, старый вариант · same, legacy
+ *   ?gnomes=1                       — сразу слепить снеговика · build a snowman right away
+ *
+ * Разметка / Markup:
+ *   data-winter-ignore              — снег здесь не копится · no snow piles on this element
+ *   data-winter-logo="#accent"      — текстовый «>>FT_» становится новогодним · text mark becomes festive
+ *   data-holiday-egg="winter"       — невидимая кнопка-пасхалка · hidden easter-egg toggle
+ *
+ * Настройки / Options (window.FT_WINTER или / or SITE_HOLIDAYS.winter):
+ *   {
+ *     months: [12, 1, 2],              // месяцы работы · active months
+ *     img: 'assets/holidays/img/',     // картинки · image folder (default: next to holidays/)
+ *     favicon: false,                  // не менять иконку вкладки · keep the tab icon
+ *     logo: false,                     // не подменять логотип · keep the logo
+ *     garland: 'header',               // где висит гирлянда · element the garland hangs under
+ *     ignore: '[data-winter-ignore]',  // где снег не копится · where snow never settles
+ *     maxFlakes: 260                   // снежинок в метель на 1440×900 · flakes in a blizzard at 1440×900
+ *   }
+ *
+ * Консоль / Console:
+ *   ftWinter.on() · off() · event('tea') · events() · openGift() · logo('santa') ·
+ *   weather('calm'|'snow'|'blizzard') · sim(frames) · state() · version
+ *
+ * События сами запускаются случайно / Events start on their own at random:
+ *   build, repair, snowballs, sled, prank, gifts, tea, loot, calendar (полночь · midnight),
+ *   party (новогодняя ночь · New Year's night), santa, fireworks.
  */
 (function () {
   'use strict';
@@ -45,8 +54,8 @@
   var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/holidays\/winter\.js.*$/, '') : 'assets/holidays/';
   var CFG = {
     months: [12, 1, 2],
-    img: BASE + 'img/',                 // где лежат картинки плагина
-    favicon: null,                      // по умолчанию — img + 'winter-favicon.svg'
+    img: BASE + 'img/',                 // где лежат картинки плагина · where plugin images live
+    favicon: null,                      // по умолчанию — img + 'winter-favicon.svg' · default: img + 'winter-favicon.svg'
     garland: 'header',
     ignore: '[data-winter-ignore]',
     maxFlakes: 260
@@ -56,9 +65,9 @@
   if (CFG.favicon == null) CFG.favicon = CFG.img + 'winter-favicon.svg';
   var VERSION = '2.0.0';
 
-  /* ---------- когда включаться ---------- */
+  /* ---------- когда включаться · when to turn on ---------- */
   var q = /[?&]winter=(0|1)/.exec(location.search);
-  var qh = /[?&]holiday=([a-z0-9_-]+)/.exec(location.search);      // ?holiday=winter / ?holiday=off от загрузчика
+  var qh = /[?&]holiday=([a-z0-9_-]+)/.exec(location.search);      // ?holiday=winter / ?holiday=off от загрузчика · ?holiday=winter / ?holiday=off from the loader
   if (!q && qh) q = [qh[0], qh[1] === 'winter' ? '1' : '0'];
   var inSeason = CFG.months.indexOf(new Date().getMonth() + 1) >= 0;
   var forceGnomes = /[?&]gnomes=1/.test(location.search);
@@ -68,8 +77,8 @@
       set: function (v) { try { if (v) localStorage.setItem(key, v); else localStorage.removeItem(key); } catch (e) {} }
     };
   }
-  var store = ls('ftWinter');        // в сезон: 'off' — посетитель выключил
-  var egg = ls('ftWinterEgg');       // вне сезона: '1' — включено пасхалкой
+  var store = ls('ftWinter');        // в сезон: 'off' — посетитель выключил · in season: 'off' means the visitor turned it off
+  var egg = ls('ftWinterEgg');       // вне сезона: '1' — включено пасхалкой · off season: '1' means enabled via the easter egg
   function wantOn() {
     if (q) return q[1] === '1';
     return inSeason ? store.get() !== 'off' : egg.get() === '1';
@@ -79,7 +88,7 @@
     if (on) { setup(); start(); } else if (running) stop();
   }
 
-  /* ---------- пасхалка: [data-winter-egg] ---------- */
+  /* ---------- пасхалка: [data-winter-egg] · easter egg: [data-winter-egg] ---------- */
   (function installEgg() {
     var st = document.createElement('style');
     st.textContent = '[data-winter-egg],[data-holiday-egg="winter"]{position:relative;align-self:center;display:inline-block;flex:none;width:28px;height:28px;margin:-6px 0 -6px -30px;padding:0;border:0;background:transparent;cursor:default;vertical-align:middle;-webkit-tap-highlight-color:transparent}' +
@@ -110,10 +119,11 @@
 
   /* =========================================================
    * DOM: холст, кнопка, полоса-сцена внизу страницы
+   * DOM: canvas, toggle button, scene strip at the page bottom
    * ========================================================= */
   var cv, ctx, btn, ground, W = 0, H = 0, DPR = 1, running = false, raf = 0;
-  var P = 2;          // размер «пикселя» спрайтов сцены
-  var S = 1;          // масштаб сцены (на телефоне меньше)
+  var P = 2;          // размер «пикселя» спрайтов сцены · size of one sprite "pixel"
+  var S = 1;          // масштаб сцены (на телефоне меньше) · scene scale (smaller on phones)
   var favOld = null;
 
   var isSetup = false;
@@ -186,8 +196,11 @@
 
   /* =========================================================
    * Новогодний логотип поверх текстового знака [data-winter-logo]
+   * New Year logo over the text mark [data-winter-logo]
    * SVG-знаки нарисованы тем же шрифтом: 1em = 200 единиц, базовая линия — y = 0,
+   * The SVG marks use the same font: 1em = 200 units, baseline at y = 0,
    * поэтому картинка ложится точно на текст при любом размере шрифта.
+   * so the image lines up with the text at any font size.
    * ========================================================= */
   var LOGO_VB = { santa: [-29, -318, 645, 385.6], reindeer: [-36, -318, 648, 385.6], garland: [-60, -255, 700, 322.6] };
   var logoSvg = {}, logoStyle = null, logoName = null;
@@ -253,7 +266,7 @@
     GH = W < 760 ? 140 : 170;
     if (cv) { cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); }
     if (ground) ground.style.height = GH + 'px';
-    if (lastW && lastW !== W) {           // пересчёт позиций сцены под новую ширину
+    if (lastW && lastW !== W) {           // пересчёт позиций сцены под новую ширину · rescale scene positions to the new width
       var kx = W / lastW;
       for (var i = 0; i < objs.length; i++) objs[i].x *= kx;
     }
@@ -263,6 +276,7 @@
 
   /* =========================================================
    * Погода: то слабый снег под наклоном, то метель вбок
+   * Weather: light slanted snow, then a sideways blizzard
    * ========================================================= */
   var weather = { i: 0.45, wind: 1.1, ti: 0.45, tw: 1.1, dir: 1, next: 0, mode: 'snow', gust: 0 };
   function pickWeather(t) {
@@ -287,6 +301,7 @@
 
   /* =========================================================
    * Снежинки и комочки
+   * Snowflakes and snow bits
    * ========================================================= */
   var flakes = [], bits = [];
   function newFlake(fromSide) {
@@ -314,8 +329,11 @@
 
   /* =========================================================
    * Поверхности: на что ложится снег (ищутся автоматически)
+   * Surfaces where snow settles (found automatically)
    * Для каждой поверхности хранится «сугроб» — высота снега по столбикам шириной CW.
+   * Each surface keeps a pile: snow height per column of width CW.
    * У скруглённых углов основание идёт по дуге, а на крутой части снег не держится.
+   * On rounded corners the base follows the arc, and snow slides off the steep part.
    * ========================================================= */
   var surfaces = [];
   var piles = new WeakMap();
@@ -332,7 +350,7 @@
   }
   function owns(el, hit) { return hit && (hit === el || el.contains(hit)); }
 
-  // профиль поверхности: смещение основания по дуге угла и предел высоты снега
+  // профиль поверхности: смещение основания по дуге угла и предел высоты снега · surface profile: base offset along the corner arc and max snow height
   function shapePile(p, w, h, radL, radR) {
     var n = p.n, off = new Float32Array(n), cap = new Float32Array(n);
     var base = clamp(w * 0.045, 3.5, W < 760 ? 9 : 13);
@@ -348,7 +366,7 @@
         k = clamp(1 - slope / 1.1, 0, 1);
         k = k * k;
       }
-      k *= Math.min(1, (e + 0.5) / 4.5);          // у прямого края снег тоже сходит на нет
+      k *= Math.min(1, (e + 0.5) / 4.5);          // у прямого края снег тоже сходит на нет · snow also tapers off at square edges
       off[i] = o; cap[i] = base * k;
     }
     p.off = off; p.cap = cap;
@@ -392,7 +410,7 @@
         if (!owns(el, hit1) && !owns(el, hit2)) continue;
       }
       seen[key] = 1;
-      // радиусы углов в пикселях экрана (у страниц с CSS zoom масштаб уже учтён в rect)
+      // радиусы углов в пикселях экрана (у страниц с CSS zoom масштаб уже учтён в rect) · corner radii in screen px (CSS zoom is already included in the rect)
       var zx = el.offsetWidth ? r.width / el.offsetWidth : 1;
       var radL = Math.min((parseFloat(cs.borderTopLeftRadius) || 0) * zx, r.width / 2, r.height);
       var radR = Math.min((parseFloat(cs.borderTopRightRadius) || 0) * zx, r.width / 2, r.height);
@@ -426,7 +444,7 @@
       var r = s.el.getBoundingClientRect();
       var p = s.p;
       var oy = p.fixed ? r.top : r.top + sy;
-      if (Math.abs(r.left - p.ox) > 3 || Math.abs(oy - p.oy) > 3) {   // элемент сдвинулся — снег осыпается
+      if (Math.abs(r.left - p.ox) > 3 || Math.abs(oy - p.oy) > 3) {   // элемент сдвинулся — снег осыпается · element moved: its snow falls off
         s.L = r.left; s.T = r.top; s.R = r.right;
         spill(s, 0.9);
         p.ox = r.left; p.oy = oy;
@@ -442,7 +460,7 @@
       p.h[i] -= take;
     }
   }
-  // попадание падающей точки в сугроб: возвращает столбик или -1
+  // попадание падающей точки в сугроб: возвращает столбик или -1 · falling point hits a pile: returns the column or -1
   function hitSurface(su, x0, y0, x1, y1) {
     if (x1 < su.L || x1 > su.R) return -1;
     var p = su.p, c = ((x1 - su.L) / (su.R - su.L) * p.n) | 0;
@@ -460,6 +478,7 @@
 
   /* =========================================================
    * Пиксельные спрайты (рисуются один раз в маленькие холсты)
+   * Pixel sprites (rendered once into small canvases)
    * ========================================================= */
   function mk(wc, hc, fn) {
     var c = document.createElement('canvas');
@@ -478,7 +497,7 @@
     });
   }
 
-  // гномик 12×17
+  // гномик 12×17 · gnome sprite, 12×17 cells
   var GPAL = { H: '#e8402a', h: '#a8261a', W: '#f4f7fb', S: '#f2c29b', s: '#d89a74', K: '#1a1a1a', N: '#ff8f7a', B: '#eef2f7', b: '#c3cedc', G: '#3f9d5a', g: '#2a6f40', Y: '#ffd23f', D: '#6a4430', d: '#3a2416' };
   var G_STAND = [
     '........WW..',
@@ -507,7 +526,7 @@
     if (j >= 7 && j <= 12) { a[1] = 'G'; a[10] = 'G'; }
     return a.join('');
   });
-  // внешность гномиков: цвет колпака, одежды, бороды, кожи и форма шапки
+  // внешность гномиков: цвет колпака, одежды, бороды, кожи и форма шапки · gnome looks: hat, clothes, beard and skin colours, hat shape
   var LOOKS = {
     hat: [['#e8402a', '#a8261a'], ['#3f6fd8', '#26489a'], ['#3f9d5a', '#2a6f40'], ['#9b5bd6', '#6a3a9a'], ['#ff8a2a', '#c25a12'], ['#ffd23f', '#c9a014'], ['#e8402a', '#a8261a']],
     tunic: [['#3f9d5a', '#2a6f40'], ['#c0392b', '#8a2418'], ['#3f6fd8', '#26489a'], ['#8a5a36', '#5e3a20'], ['#6c6f7a', '#46484f'], ['#2a9d8f', '#1d6f65']],
@@ -538,7 +557,7 @@
     return (gnomeSprCache[key] = out);
   }
 
-  // ёлка: высокая и стройная, с ярусами, снегом на лапах, шарами и звездой
+  // ёлка: высокая и стройная, с ярусами, снегом на лапах, шарами и звездой · tree: tall and slim, tiered, snowy branch tips, baubles and a star
   var treeSpr = null, treeLightsC = [];
   function treeSprite() {
     if (treeSpr) return treeSpr;
@@ -549,7 +568,7 @@
     var rows = [];
     treeLightsC = [];
     treeSpr = mk(wc, hc, function (set) {
-      // звезда
+      // звезда · star
       var st = ['...Y...', '..YYY..', 'YYYwYYY', '.YYYYY.', '..YYY..', '.YY.YY.', '.Y...Y.'];
       for (var j = 0; j < st.length; j++) for (var i = 0; i < 7; i++) {
         var ch = st[j][i];
@@ -568,14 +587,14 @@
           else if (x < 0 && fr > 0.2 && n > 0.45) col = lite;
           else if (x > hw * 0.45 && n < 0.55) col = dark;
           if (n > 0.94 && tt < 0.8) col = vlite;
-          if (tt > 0.7 && tt <= 0.86 && fr > 0.5) col = n > 0.3 ? snow : snowS;     // снег на концах лап
+          if (tt > 0.7 && tt <= 0.86 && fr > 0.5) col = n > 0.3 ? snow : snowS;     // снег на концах лап · snow on branch tips
           if (r === 0) col = snow;
           set(cx + x, y, col);
         }
       }
-      // ствол
+      // ствол · trunk
       for (var t = 0; t < trunk; t++) for (var x2 = -2; x2 <= 1; x2++) set(cx + x2, star + F - 1 + t, x2 >= 0 ? '#4a2c18' : '#7a4a2a');
-      // шары
+      // шары · baubles
       var cols = ['#ff4f12', '#ffd23f', '#5b96f5', '#ff5fa2', '#e8e8f0'];
       for (var b = 0; b < 13; b++) {
         var rr0 = 6 + Math.floor(hash(b, 3) * (F - 9));
@@ -586,7 +605,7 @@
         set(bx, by, bc); set(bx + 1, by, bc); set(bx, by + 1, bc); set(bx + 1, by + 1, bc);
         set(bx, by, '#ffffff');
       }
-      // огоньки — по диагональным «гирляндам»
+      // огоньки — по диагональным «гирляндам» · lights along diagonal strings
       for (var g = 0; g < 4; g++) {
         var r0 = 8 + g * Math.floor((F - 10) / 4);
         for (var s = 0; s < 7; s++) {
@@ -601,7 +620,7 @@
     return treeSpr;
   }
 
-  // подарок w×h клеток + бант
+  // подарок w×h клеток + бант · gift of w×h cells plus a bow
   var GIFT_COLS = [['#ff4f12', '#ffd23f'], ['#5b96f5', '#f4f7fb'], ['#3f9d5a', '#ff4f12'], ['#9b7bff', '#ffd23f'], ['#ecebe6', '#ff4f12'], ['#ff5fa2', '#f4f7fb'], ['#ffd23f', '#5b96f5']];
   function shadeHex(hex, d) {
     var n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
@@ -655,7 +674,7 @@
     return (hatSprs[style] = spr);
   }
 
-  /* ---------- рисование пиксельных кругов (комья снега) ---------- */
+  /* ---------- рисование пиксельных кругов (комья снега) · drawing pixel circles (snowballs) ---------- */
   function snapv(v) { return Math.round(v / P) * P; }
   function pixCircle(cx, cy, r, col) {
     ctx.fillStyle = col;
@@ -684,11 +703,13 @@
 
   /* =========================================================
    * Сцена внизу: земля, ёлка, подарки, снеговики, комья, гномики
+   * Bottom scene: ground, tree, gifts, snowmen, balls, gnomes
    * Координаты объектов: x — экранный, y — от низа полосы (0) вверх отрицательный.
+   * Object coordinates: x is screen x, y is measured from the strip bottom (0), negative upwards.
    * ========================================================= */
   var gcw = 4, gh = null, gn = 0;
-  var objs = [];                 // подарки, снеговики, комья, шляпы
-  var wrecks = [];               // сломанные снеговики, ждущие ремонта
+  var objs = [];                 // подарки, снеговики, комья, шляпы · gifts, snowmen, snowballs, hats
+  var wrecks = [];               // сломанные снеговики, ждущие ремонта · broken snowmen waiting for repair
   var ev = null, evCool = 0, accum = 0, giftT = 0, seeded = false;
   var treeX = 0.86;
   function groundInit() {
@@ -758,7 +779,7 @@
     g.vr = initial ? 0 : rr(-0.08, 0.08);
   }
 
-  /* ---------- физика объектов ---------- */
+  /* ---------- физика объектов · object physics ---------- */
   function stepObjects(dt, t) {
     for (var i = objs.length - 1; i >= 0; i--) {
       var o = objs[i];
@@ -771,7 +792,7 @@
       if (wallBounce) {
         if (o.x < 10) { o.x = 10; o.vx = Math.abs(o.vx) * 0.5; }
         if (o.x > W - 10) { o.x = W - 10; o.vx = -Math.abs(o.vx) * 0.5; }
-      } else if (o.x < -80 || o.x > W + 80) { kill(o); continue; }     // выкинули за край — пропал
+      } else if (o.x < -80 || o.x > W + 80) { kill(o); continue; }     // выкинули за край — пропал · thrown off-screen: gone
       if (o.kind === 'gift' || o.kind === 'item') o.rot += o.vr * dt;
       if (o.kind === 'item' && t - o.born > 160) { kill(o); continue; }
       if (o.kind === 'ball') o.rot += o.vx / Math.max(3, o.r) * dt;
@@ -797,7 +818,7 @@
         }
       }
       if (o.kind === 'snowman' && !o.fly) { o.vt += (-o.tilt * 0.08 - o.vt * 0.15) * dt; o.tilt += o.vt * dt; }
-      // удары подарком
+      // удары подарком · gift hits
       var sp = Math.abs(o.vx) + Math.abs(o.vy);
       if (o.kind === 'gift' && sp > 5) giftHits(o, t);
     }
@@ -845,6 +866,7 @@
 
   /* =========================================================
    * Гномики: очередь действий у каждого, общий сценарий у события
+   * Gnomes: each has an action queue, the event holds the shared script
    * ========================================================= */
   var RUN = 2.4;
   function mkGnome(side) { return { side: side, x: side < 0 ? -30 : W + 30, flip: side > 0, f: 0, q: [], pose: 'stand', moving: false, knock: 0, kdir: 1, hop: 0, look: randLook() }; }
@@ -911,13 +933,13 @@
         done = t - a.t0 > (a.dur || 1.4);
         break;
       case 'leave': done = walk(g, g.side < 0 ? -40 : W + 40, RUN * 1.25, dt); if (done) g.gone = true; break;
-      case 'pause':                                    // постоять (повернувшись куда надо)
+      case 'pause':                                    // постоять (повернувшись куда надо) · stand still (facing a direction)
         if (!a.t0) a.t0 = t;
         if (a.face) g.flip = (typeof a.face === 'function' ? a.face() : a.face) < 0;
         if (a.pose) g.pose = a.pose;
         done = t - a.t0 > (a.dur || 1);
         break;
-      case 'throw': {                                  // бросить снежок в цель
+      case 'throw': {                                  // бросить снежок в цель · throw a snowball at a target
         if (!a.t0) {
           a.t0 = t;
           var tg = a.at, dirT = tg.x >= g.x ? 1 : -1;
@@ -930,7 +952,7 @@
         done = t - a.t0 > 0.35;
         break;
       }
-      case 'dig': {                                    // насыпать горку
+      case 'dig': {                                    // насыпать горку · build a snow hill
         if (!a.t0) a.t0 = t;
         var sig = 34 * S, hh = 30 * S, dur = a.dur || 2.6;
         for (var cc = Math.max(0, Math.floor((a.x - sig * 2.5) / gcw)); cc <= Math.min(gn - 1, Math.ceil((a.x + sig * 2.5) / gcw)); cc++) {
@@ -943,7 +965,7 @@
         if (done) g.moving = false;
         break;
       }
-      case 'sled': {                                   // скатиться на санках
+      case 'sled': {                                   // скатиться на санках · slide down on a sled
         if (!a.v) { a.v = 0.9; a.t0 = t; }
         var dirS = a.dir, slope = (floorY(g.x + dirS * 4) - floorY(g.x - dirS * 4)) / 8;
         a.v = clamp(a.v + (slope * 0.6 - 0.03) * dt, 0, 7);
@@ -966,7 +988,7 @@
     e.sm = sm;
   }
 
-  // гномики лепят нового снеговика
+  // гномики лепят нового снеговика · gnomes build a new snowman
   function startBuild(t) {
     var spot = freeX(W * 0.1, W * (W < 760 ? 0.62 : 0.72), 90 * S);
     if (spot == null) {
@@ -1000,14 +1022,14 @@
       { k: 'wait', fn: function () { return f.done; } },
       { k: 'cheer' }, { k: 'leave' }
     ];
-    // подставляем комья, когда они появятся
+    // подставляем комья, когда они появятся · bind snowballs once they exist
     A.q[2].bind = 'b1'; A.q[6].bind = 'b3'; B.q[2].bind = 'b2'; B.q[4].bind = 'b2';
     e.bindAll = true;
     e.name = 'build';
     ev = e;
   }
 
-  // гномики чинят сломанного снеговика
+  // гномики чинят сломанного снеговика · gnomes repair a broken snowman
   function startRepair(w, t) {
     var bs = w.b.filter(function (b) { return objs.indexOf(b) >= 0; }).sort(function (a, b) { return b.r - a.r; });
     if (bs.length < 3) { wrecks.splice(wrecks.indexOf(w), 1); bs.forEach(kill); if (w.hat) kill(w.hat); return; }
@@ -1055,9 +1077,13 @@
 
   /* =========================================================
    * События сцены. Каждое событие — набор очередей действий для гномиков.
+   * Scene events. Each event is a set of action queues for gnomes.
    * Обычные события запускаются случайно, когда сцена внизу видна и никто не занят;
+   * Ground events start at random when the scene is visible and nobody is busy;
    * «небесные» (Санта, салют) идут поверх всей страницы.
+   * sky events (Santa, fireworks) play over the whole page.
    * Добавить событие: EVENTS.имя = { w: вес или функция, can: функция-условие, start: функция(t) }.
+   * Add an event: EVENTS.name = { w: weight or function, can: condition, start: function(t) }.
    * ========================================================= */
   var snowballs = [];
   var sky = { santa: null, sparks: [], rockets: [], fwUntil: 0, fwNext: 0, santaNext: 0 };
@@ -1071,7 +1097,7 @@
     cal.shown = { d: d.getDate(), m: d.getMonth() }; cal.key = dateKey(d);
     cal.xf = W < 760 ? 0.52 : 0.3;
   }
-  function calCheck(t) {                                // наступила полночь — календарь надо перевернуть
+  function calCheck(t) {                                // наступила полночь — календарь надо перевернуть · midnight passed: the calendar needs a new page
     if (t < cal.chk) return;
     cal.chk = t + 1;
     if (dateKey(new Date()) !== cal.key) cal.pending = true;
@@ -1090,7 +1116,7 @@
   function gnomeAt(side, x) { var g = mkGnome(side); if (x != null) g.x = x; return g; }
   function sideOf(x) { return x < W / 2 ? -1 : 1; }
 
-  // Полночь: гномик прибегает к календарю и отрывает листок
+  // Полночь: гномик прибегает к календарю и отрывает листок · Midnight: a gnome runs to the calendar and tears off a page
   function startCalendar(t, flip) {
     var cx = cal.xf * W, A = mkGnome(sideOf(cx)), stand = cx - A.side * 16 * S;
     A.q = [{ k: 'run', x: stand }, { k: 'pause', dur: flip ? 0.6 : 1.6, face: -A.side, pose: flip ? 'up' : 'stand' }];
@@ -1099,7 +1125,7 @@
     ev = { gn: [A], flags: {}, name: flip ? 'calendar-flip' : 'calendar' };
   }
 
-  // Игра в снежки
+  // Игра в снежки · Snowball fight
   function startSnowballs(t) {
     var cx = rr(W * 0.25, W * 0.6), L = rr(100, 160) * S;
     var A = mkGnome(-1), B = mkGnome(1);
@@ -1133,7 +1159,7 @@
     }
   }
 
-  // Горка: один насыпает, оба катаются
+  // Горка: один насыпает, оба катаются · Sled hill: one builds it, both ride
   function hillSpot() { return freeX(W * 0.14, W * (W < 760 ? 0.6 : 0.66), 120 * S); }
   function startSled(t) {
     var hx = hillSpot(); if (hx == null) return false;
@@ -1149,7 +1175,7 @@
     ev = { gn: [A, B], flags: f, name: 'sled' };
   }
 
-  // Шалость: гномик двигает снеговика или пинает его (потом его чинят)
+  // Шалость: гномик двигает снеговика или пинает его (потом его чинят) · Prank: a gnome moves or kicks a snowman (others repair it later)
   function startPrank(t) {
     var list = standingSnowmen(); if (!list.length) return false;
     var sm = pick(list), side = sideOf(sm.x), A = mkGnome(side);
@@ -1165,7 +1191,7 @@
     ev = { gn: [A], flags: {}, name: 'prank' };
   }
 
-  // Обмен подарками
+  // Обмен подарками · Gift exchange
   function headGift(g) { var gi = newGift(g.x, floorY(g.x) - 16 * P); gi.lock = true; return gi; }
   function startGiftSwap(t) {
     var mid = rr(W * 0.3, W * 0.62), A = mkGnome(-1), B = mkGnome(1), f = {}, gA = null, gB = null;
@@ -1183,13 +1209,13 @@
       { k: 'do', fn: function () { f.gb = true; } }, { k: 'wait', fn: function () { return f.ga; } },
       { k: 'cheer', dur: 1.2 }, { k: 'carry', b: null, x: treeX * W + 40 * S },
       { k: 'do', fn: function () { if (gA) { gA.lock = false; gA.vy = -2; } } }, { k: 'leave' }];
-    // подарок, который несёт гномик, подставляется по ходу
+    // подарок, который несёт гномик, подставляется по ходу · the gift a gnome carries is bound on the fly
     A.q[4].bindFn = function () { return gA; }; A.q[8].bindFn = function () { return gB; };
     B.q[4].bindFn = function () { return gB; }; B.q[8].bindFn = function () { return gA; };
     ev = { gn: [A, B], flags: f, name: 'gifts', bindFns: true };
   }
 
-  // Новогодние гуляния: салют и танцы с подарками под ёлкой
+  // Новогодние гуляния: салют и танцы с подарками под ёлкой · New Year party: fireworks, dancing and gifts under the tree
   function startParty(t) {
     partyDone = true;
     sky.fwUntil = t + 32;
@@ -1204,7 +1230,7 @@
     ev = { gn: gn, flags: {}, name: 'party' };
   }
 
-  // Санта пролетает над страницей и роняет подарок
+  // Санта пролетает над страницей и роняет подарок · Santa flies over the page and drops a gift
   function startSanta(t) {
     var dir = rnd() < 0.5 ? 1 : -1;
     sky.santa = { dir: dir, x: dir > 0 ? -240 : W + 240, y0: rr(H * 0.1, H * 0.3), drop: rr(W * 0.2, W * 0.8), dropped: false };
@@ -1213,6 +1239,7 @@
 
   /* =========================================================
    * Предметы из подарков (как добыча в играх): разной редкости, гномики их подбирают
+   * Loot from gifts (game-style drops) of different rarity; gnomes pick it up
    * ========================================================= */
   var ITEM_PAL = { R: '#e8402a', r: '#a8261a', W: '#f4f7fb', Y: '#ffd23f', y: '#c9a014', w: '#ffffff', C: '#5b96f5', c: '#2f5fb8', M: '#ff5fa2', m: '#b8336f',
     b: '#a8662e', B: '#7a4620', K: '#1a1a1a', O: '#ff4f12', o: '#b8380c', g: '#9aa3ad', G: '#3f9d5a', D: '#ffd23f', d: '#e09a12', P: '#9b7bff', p: '#6a4fc4' };
@@ -1250,7 +1277,7 @@
     for (i = 0; i < n; i++) { var it = newItem(rollItem(), g.x, g.y - g.h * P / 2); it.vx = rr(-3, 3); it.vy = -rr(5, 9); it.vr = rr(-0.3, 0.3); }
   }
 
-  // гномики подбирают выпавшее
+  // гномики подбирают выпавшее · gnomes pick up the loot
   function lootReady(t) {
     return objs.filter(function (o) { return o.kind === 'item' && !o.held && !o.lock && o.vy === 0 && t - o.born > 1.5; });
   }
@@ -1272,6 +1299,7 @@
 
   /* =========================================================
    * Чаепитие: выносят стол, самовар и баранки, пируют, играют, уносят всё обратно
+   * Tea party: gnomes bring a table, samovar and bagels, feast, play, carry it all away
    * ========================================================= */
   var propSpr = {};
   function propSprite(kind) {
@@ -1289,8 +1317,8 @@
       for (var x = 5; x < 9; x++) set(x, 1, y);
       for (x = 4; x < 10; x++) { set(x, 2, Y); set(x, 3, y); }
       for (var r = 4; r < 13; r++) { var hw = r < 6 ? 4 : (r < 11 ? 5 : 4); for (x = 7 - hw; x < 7 + hw; x++) set(x, r, x === 7 - hw + 1 ? w : (x >= 7 + hw - 2 ? y : Y)); }
-      set(1, 6, y); set(1, 7, y); set(2, 6, y); set(12, 6, y); set(12, 7, y); set(11, 6, y);       // ручки
-      set(12, 10, '#3a3f46'); set(13, 10, '#3a3f46'); set(13, 11, '#3a3f46');                   // краник
+      set(1, 6, y); set(1, 7, y); set(2, 6, y); set(12, 6, y); set(12, 7, y); set(11, 6, y);       // ручки · handles
+      set(12, 10, '#3a3f46'); set(13, 10, '#3a3f46'); set(13, 11, '#3a3f46');                   // краник · tap
       for (x = 5; x < 9; x++) set(x, 13, y);
       for (x = 3; x < 11; x++) { set(x, 14, Y); set(x, 15, y); }
       for (x = 2; x < 12; x++) set(x, 16, y);
@@ -1336,7 +1364,7 @@
       { k: 'carry', b: null, x: -50 }, { k: 'do', fn: function () { kill(bg); f.bgGone = true; } }, { k: 'leave' }]);
     Cg.q[4].bindFn = function () { return bg; }; Cg.q[Cg.q.length - 3].bindFn = function () { return bg; };
     var gn = [A, B, Cg];
-    // гости: едят, а потом играют в снежки друг с другом
+    // гости: едят, а потом играют в снежки друг с другом · guests eat, then play snowballs with each other
     if (rnd() < 0.8) {
       var D = mkGnome(1), E = mkGnome(-1);
       D.q = [{ k: 'pause', dur: 2 }, { k: 'run', x: x0 + 62 * S }].concat(feast(D, 2)).concat([{ k: 'run', x: Math.min(W - 30, x0 + 130 * S) }, { k: 'throw', at: E }, { k: 'pause', dur: 0.8, face: -1 }, { k: 'throw', at: E }, { k: 'wait', fn: function () { return f.end; } }, { k: 'cheer', dur: 0.8 }, { k: 'leave' }]);
@@ -1358,7 +1386,7 @@
     party: { w: function () { return holiday() ? 1.2 : 0; }, start: startParty },
     santa: { sky: true, start: startSanta },
     fireworks: { sky: true, start: function (t) { sky.fwUntil = t + 20; } },
-    midnight: { manual: true, start: function () {    // для проверки: «вчера» на календаре — гномик перевернёт
+    midnight: { manual: true, start: function () {    // для проверки: «вчера» на календаре — гномик перевернёт · for testing: show yesterday so a gnome flips the page
       var d = new Date(Date.now() - 864e5); cal.shown = { d: d.getDate(), m: d.getMonth() }; cal.key = dateKey(d); cal.pending = true;
     } }
   };
@@ -1381,7 +1409,7 @@
     return e.start(t) !== false;
   }
 
-  // планировщик: вызывается каждый кадр
+  // планировщик: вызывается каждый кадр · scheduler: runs every frame
   function schedule(dt, t, gVis) {
     calInit(); calCheck(t);
     if (!evNext) evNext = t + rr(10, 22);
@@ -1402,11 +1430,11 @@
       else if (t > evNext && t > evCool) { var k = pickEvent(); if (k) runEvent(k, t); evNext = t + rr(22, 50); }
     }
     if (!reduced && !sky.santa && t > sky.santaNext) { startSanta(t); sky.santaNext = t + (holiday() ? rr(90, 200) : rr(240, 520)); }
-    if (nyNight() && sky.fwUntil < t + 5) sky.fwUntil = t + 30;     // в новогоднюю ночь салют не кончается
+    if (nyNight() && sky.fwUntil < t + 5) sky.fwUntil = t + 30;     // в новогоднюю ночь салют не кончается · on New Year's night the fireworks never stop
     stepSky(dt, t);
   }
 
-  /* ---------- небо: Санта, искры, салют ---------- */
+  /* ---------- небо: Санта, искры, салют · sky: Santa, sparks, fireworks ---------- */
   function stepSky(dt, t) {
     var s = sky.santa;
     if (s) {
@@ -1470,7 +1498,7 @@
     }
   }
 
-  /* ---------- спрайты для событий ---------- */
+  /* ---------- спрайты для событий · event sprites ---------- */
   var sledSpr = null;
   function sledSprite() {
     if (sledSpr) return sledSpr;
@@ -1518,7 +1546,7 @@
     return santaSpr;
   }
 
-  /* ---------- календарь на столбике ---------- */
+  /* ---------- календарь на столбике · calendar on a post ---------- */
   function drawCalendar(t, gBase) {
     if (!cal.shown) return;
     var x = cal.xf * W, base = gBase + floorY(x) + P;
@@ -1529,14 +1557,14 @@
     ctx.fillStyle = '#f4f7fb'; ctx.fillRect(left + P, top + 6 * P, (bw - 2) * P, (bh - 7) * P);
     ctx.fillStyle = '#e8402a'; ctx.fillRect(left + P, top + P, (bw - 2) * P, 5 * P);
     cell(left + 5 * P, top - P, 1, 2, '#c3cedc'); cell(left + (bw - 6) * P, top - P, 1, 2, '#c3cedc');
-    ctx.fillStyle = '#f4f7fb'; ctx.fillRect(left - P, top - 2 * P, (bw + 2) * P, 2 * P);       // снег на табличке
+    ctx.fillStyle = '#f4f7fb'; ctx.fillRect(left - P, top - 2 * P, (bw + 2) * P, 2 * P);       // снег на табличке · snow on the sign
     var cx = left + bw * P / 2;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.font = 'bold ' + (8 * S + 1) + 'px "JetBrains Mono", ui-monospace, monospace'; ctx.fillStyle = '#ffffff';
     ctx.fillText(MONTHS[cal.shown.m], cx, top + 3.6 * P);
     ctx.font = 'bold ' + Math.round(19 * S) + 'px "Fira Sans Condensed", "Arial Narrow", sans-serif'; ctx.fillStyle = '#1a1a1a';
     ctx.fillText(String(cal.shown.d), cx, top + 12.6 * P);
-    if (cal.tear) {                                       // оторванный листок улетает
+    if (cal.tear) {                                       // оторванный листок улетает · the torn page flies away
       var u = (t - cal.tear.t0) / 1.1;
       if (u >= 1) cal.tear = null;
       else {
@@ -1554,6 +1582,7 @@
 
   /* =========================================================
    * Мини-игра: взять объект мышкой, тащить, кинуть
+   * Mini-game: grab, drag and throw objects with the mouse
    * ========================================================= */
   var drag = null, hoverSet = false, suppressClick = false, gBaseNow = 0;
   var trail = [];
@@ -1584,7 +1613,7 @@
     if (!running || e.button > 0) return;
     var o = sceneHit(e.clientX, e.clientY);
     if (!o) return;
-    if (e.pointerType === 'touch') {                 // на телефоне — тап: пнуть
+    if (e.pointerType === 'touch') {                 // на телефоне — тап: пнуть · on phones a tap kicks the object
       kickObj(o, e.clientX);
       return;
     }
@@ -1616,7 +1645,7 @@
       if (o.kind === 'snowman') {
         o.tilt = clamp(o.tilt * 0.7 + vx * 0.03, -0.8, 0.8);
         var sp = trailSpeed();
-        if (Math.hypot(sp[0], sp[1]) > 34) {         // трясут слишком сильно — развалился
+        if (Math.hypot(sp[0], sp[1]) > 34) {         // трясут слишком сильно — развалился · shaken too hard: it falls apart
           var t = (now - T0) / 1000;
           breakSnowman(o, sp[0] * 0.4, sp[1] * 0.3, t);
         }
@@ -1652,6 +1681,7 @@
 
   /* =========================================================
    * Мышь / палец: смахнуть снег с блоков
+   * Mouse / finger: sweep snow off blocks
    * ========================================================= */
   var mouse = { x: -999, y: -999, vx: 0, vy: 0, t: 0 };
   function onTouch(e) { var t = e.touches && e.touches[0]; if (t) sweepAt(t.clientX, t.clientY); }
@@ -1686,6 +1716,7 @@
 
   /* =========================================================
    * Гирлянда под шапкой
+   * Garland under the header
    * ========================================================= */
   var garland = { y: -999, span: 150, sw: [] };
   function findGarlandY() {
@@ -1752,9 +1783,10 @@
 
   /* =========================================================
    * Главный цикл
+   * Main loop
    * ========================================================= */
   var last = 0, T0 = performance.now(), frameN = 0, lastScroll = null;
-  var simOffset = 0;                                   // сдвиг времени для ftWinter.sim()
+  var simOffset = 0;                                   // сдвиг времени для ftWinter.sim() · time offset for ftWinter.sim()
   function frame(now) {
     raf = requestAnimationFrame(frame);
     tick(now + simOffset);
@@ -1775,7 +1807,7 @@
     gBaseNow = gBase;
     var w = windNow();
 
-    /* --- снежинки --- */
+    /* --- снежинки · snowflakes --- */
     var want = targetCount();
     var spawn = Math.min(6, Math.max(0, want - flakes.length));
     for (var s = 0; s < spawn; s++) if (rnd() < 0.5) flakes.push(newFlake(rnd() < 0.5));
@@ -1784,7 +1816,7 @@
     ctx.imageSmoothingEnabled = false;
 
     var surf = surfaces, i, j, c;
-    // снег живёт в пространстве страницы: при прокрутке хлопья уезжают вместе с ней (ближние — сильнее)
+    // снег живёт в пространстве страницы: при прокрутке хлопья уезжают вместе с ней (ближние — сильнее) · snow lives in page space: flakes scroll with the page (near ones more)
     var sy = window.scrollY || 0, dsy = lastScroll == null ? 0 : sy - lastScroll;
     lastScroll = sy;
     if (dsy) {
@@ -1823,7 +1855,7 @@
       f.x = nx; f.y = ny;
     }
 
-    /* --- сугробы: оседание и сдувание метелью --- */
+    /* --- сугробы: оседание и сдувание метелью · piles: settling and blizzard blow-off --- */
     if (frameN % 2 === 0) {
       var blow = weather.mode === 'blizzard' ? weather.i : 0;
       for (j = 0; j < surf.length; j++) {
@@ -1850,7 +1882,7 @@
       }
     }
 
-    /* --- комочки (смахнутый снег) --- */
+    /* --- комочки (смахнутый снег) · snow bits (swept snow) --- */
     for (i = bits.length - 1; i >= 0; i--) {
       var b = bits[i];
       b.vy += 0.16 * dt; b.vx += (w * 0.5 - b.vx) * 0.02 * dt;
@@ -1867,16 +1899,16 @@
       b.x = bx; b.y = by;
     }
 
-    /* --- сцена: физика, гномики, события --- */
+    /* --- сцена: физика, гномики, события · scene: physics, gnomes, events --- */
     stepObjects(dt, t);
     if (!giftT) giftT = t + rr(35, 70);
     if (t > giftT) { dropGift(false); giftT = t + rr(35, 70); }
     schedule(dt, t, gVis);
-    if (frameN % 30 === 0 && gh) {                       // горка понемногу оседает и сглаживается
+    if (frameN % 30 === 0 && gh) {                       // горка понемногу оседает и сглаживается · the hill slowly settles and smooths out
       for (c = 1; c < gn - 1; c++) if (gh[c] > 40) gh[c] = (gh[c - 1] + gh[c] * 2 + gh[c + 1]) / 4 - (gh[c] > 50 ? 0.03 : 0);
     }
 
-    /* --- рисование: дальние снежинки → сугробы → сцена → комочки → ближние --- */
+    /* --- рисование: дальние снежинки → сугробы → сцена → комочки → ближние · drawing: far flakes → piles → scene → bits → near flakes --- */
     drawFlakes(0, 0.42);
     drawPiles();
     drawGarland(t, dt);
@@ -1886,7 +1918,7 @@
     drawFlakes(0.42, 1.01);
   }
 
-  /* ---------- рисование ---------- */
+  /* ---------- рисование · drawing ---------- */
   function drawFlakes(z0, z1) {
     ctx.fillStyle = '#ffffff';
     for (var i = 0; i < flakes.length; i++) {
@@ -1902,7 +1934,7 @@
     ctx.fillStyle = C.snow;
     for (var i = 0; i < bits.length; i++) { var b = bits[i]; ctx.fillRect(b.x - b.r / 2, b.y - b.r / 2, b.r, b.r); }
   }
-  // сугроб рисуется только там, где снег есть: отдельными «кусками», основание повторяет скругление
+  // сугроб рисуется только там, где снег есть: отдельными «кусками», основание повторяет скругление · a pile is drawn only where snow exists, in runs; the base follows the rounding
   function drawPiles() {
     for (var j = 0; j < surfaces.length; j++) {
       var s = surfaces[j], p = s.p, h = p.h, off = p.off, n = p.n;
@@ -1937,7 +1969,7 @@
   }
 
   function drawScene(t, gBase) {
-    // снежный покров
+    // снежный покров · ground snow
     ctx.beginPath();
     ctx.moveTo(0, gBase + 2);
     for (var c = 0; c < gn; c++) ctx.lineTo(c * gcw, gBase - gh[c]);
@@ -1949,7 +1981,7 @@
     ctx.lineTo(W, gBase + 2); ctx.closePath();
     ctx.fillStyle = '#c3d0e2'; ctx.fill();
 
-    // ёлка
+    // ёлка · tree
     var tr = treeSprite(), tx = treeX * W, tby = gBase + floorY(tx) + 2 * P;
     var x0 = snapv(tx - tr.cx * P), y0 = snapv(tby - tr.height);
     var sg = 0.5 + 0.5 * Math.sin(t * 2);
@@ -1966,7 +1998,7 @@
     drawCalendar(t, gBase);
     drawObjs(t, gBase);
   }
-  // объекты: сначала снеговики и комья, потом подарки и шляпы; рисуются, только если видны
+  // объекты: сначала снеговики и комья, потом подарки и шляпы; рисуются, только если видны · objects: snowmen and balls first, then gifts and hats; drawn only when on screen
   function drawObjs(t, gBase) {
     var order = objs.slice().sort(function (a, b) { return rank(a) - rank(b); });
     for (var i = 0; i < order.length; i++) {
@@ -2001,7 +2033,7 @@
     var img = spr[key][g.flip ? 1 : 0];
     var by = gBase + floorY(g.x) + P - g.hop;
     if (g.sled) { var sl = sledSprite()[g.flip ? 1 : 0]; ctx.drawImage(sl, snapv(g.x - sl.width / 2), snapv(by - sl.height)); by -= 3 * P; }
-    if (g.knock > 0) {                               // сбит подарком — лежит
+    if (g.knock > 0) {                               // сбит подарком — лежит · knocked down by a gift: lying
       ctx.save(); ctx.translate(g.x, by - 3 * P); ctx.rotate(g.kdir * Math.PI / 2); ctx.drawImage(img, -img.width / 2, -img.height + 3 * P); ctx.restore();
       if (Math.floor(t * 6) % 2) cell(g.x - 2 * P, by - 12 * P, 1, 1, '#ffd23f'), cell(g.x + 3 * P, by - 13 * P, 1, 1, '#ffd23f');
       return;
@@ -2018,11 +2050,11 @@
     var c1 = -r1, c2 = c1 - r1 - r2 + 3 * P, c3 = tiny ? c1 - r1 - r3 + 2 * P : c2 - r2 - r3 + 2 * P;
     if (tiny) { r2 = r1; c2 = c1; }
     var face = sm.face === -1 || (sm.face && t > sm.face);
-    if (face && st === 'broom') {                        // метла в руке
+    if (face && st === 'broom') {                        // метла в руке · broom in hand
       for (var bi = 0; bi < 14; bi++) cell(r2 + 9 * P, c2 + r2 * 0.6 - bi * P, 1, 1, '#6a4430');
       for (bi = -2; bi <= 2; bi++) cell(r2 + 9 * P + bi * P, c2 + r2 * 0.6 + P, 1, 3, '#d9b45b');
     }
-    // руки-ветки за телом
+    // руки-ветки за телом · twig arms behind the body
     if (face) {
       for (var sgn = -1; sgn <= 1; sgn += 2) {
         for (var i = 0; i < 8; i++) cell(sgn * (r2 * 0.75 + i * P), c2 - r2 * 0.15 - i * P * 0.6, 1, 1, i % 3 ? '#6a4430' : '#4f3222');
@@ -2032,7 +2064,7 @@
     drawBall(0, c1, r1);
     if (!tiny) drawBall(0, c2, r2);
     drawBall(0, c3, r3);
-    // шарф
+    // шарф · scarf
     if (sm.scarf) {
       var sw = Math.round(r3 * 2.1 / P);
       for (var k = 0; k < sw; k++) cell(-r3 * 1.05 + k * P, c3 + r3 - 2 * P, 1, 2, k % 3 ? sm.scarf : shadeHex(sm.scarf, -40));
@@ -2044,7 +2076,7 @@
       cell(0, c3 + P * 0.2, 3, 1, '#ff8a2a'); cell(0, c3 + P * 1.2, 2, 1, '#e0661a');
       cell(-r3 * 0.3, c3 + r3 * 0.45, 1, 1, '#3a3a3a'); cell(0, c3 + r3 * 0.55, 1, 1, '#3a3a3a'); cell(r3 * 0.3, c3 + r3 * 0.45, 1, 1, '#3a3a3a');
       if (!tiny) for (var bb = -1; bb <= 1; bb++) cell(-P / 2, c2 + bb * r2 * 0.42, 1, 1, '#1a1a1a');
-      if (st === 'earmuffs') {                            // наушники
+      if (st === 'earmuffs') {                            // наушники · earmuffs
         for (var ex = -1; ex <= 1; ex += 2) pixCircle(ex * r3 * 0.95, c3, 3 * P, sm.scarf || '#ff5fa2');
         for (var ea = 0; ea < 9; ea++) { var an = Math.PI + ea / 8 * Math.PI; cell(Math.cos(an) * r3 * 1.05, c3 + Math.sin(an) * r3 * 1.05, 1, 1, '#3a3f46'); }
       }
@@ -2054,13 +2086,13 @@
     ctx.restore();
   }
 
-  /* ---------- управление из консоли ---------- */
+  /* ---------- управление из консоли · console API ---------- */
   window.ftWinter = {
     version: VERSION,
     on: function () { setOn(true); },
     off: function () { setOn(false); },
     gnomes: function () { forceGnomes = true; evCool = 0; },
-    // запустить событие: build, snowballs, sled, prank, gifts, calendar, tea, party, santa, fireworks, midnight, loot
+    // запустить событие: build, snowballs, sled, prank, gifts, calendar, tea, party, santa, fireworks, midnight, loot · run an event: build, snowballs, sled, prank, gifts, calendar, tea, party, santa, fireworks, midnight, loot
     openGift: function () { var g = objs.filter(function (o) { return o.kind === 'gift'; })[0]; if (g) breakGift(g, (performance.now() - T0) / 1000); return !!g; },
     event: function (name) { return runEvent(name, (performance.now() - T0) / 1000); },
     events: function () { return Object.keys(EVENTS); },
@@ -2077,10 +2109,10 @@
     _break: function () { var sm = objs.filter(function (o) { return o.kind === 'snowman'; })[0]; if (sm) breakSnowman(sm, 4, -3, (performance.now() - T0) / 1000); }
   };
 
-  /* ---------- старт ---------- */
+  /* ---------- старт · start ---------- */
   function boot() {
     if (wantOn()) { setup(); start(); }
-    else if (inSeason) { setup(); document.body.appendChild(btn); paintBtn(); }   // в сезон кнопка видна, чтобы включить обратно
+    else if (inSeason) { setup(); document.body.appendChild(btn); paintBtn(); }   // в сезон кнопка видна, чтобы включить обратно · in season the button stays visible to turn it back on
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(boot, 300); });
   else setTimeout(boot, 300);

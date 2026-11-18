@@ -1,166 +1,313 @@
-# site-holidays — праздничные режимы для сайтов FolloTeam
+# site-holidays
 
-Праздники, эффекты и пасхалки для сайтов. Здесь их делают и улучшают, а сайты забирают готовые версии.
+**Праздничные режимы для сайтов · Holiday modes for websites**
 
-Сайт подключает **один загрузчик** — `site-holidays.js`. Он смотрит на дату, адрес страницы и пасхалку
-и сам подгружает нужный праздник из `holidays/`. Новый праздник — это новый модуль и строчка в списке
-загрузчика; на сайтах ничего менять не нужно, достаточно обновиться.
+Сделано командой [FolloTeam](https://folloteam.ru) · Made by [FolloTeam](https://folloteam.ru)
 
-Без зависимостей. Модули сами находят, на что ложатся эффекты, и подстраиваются под любую вёрстку.
+[Русский](#русский) · [English](#english)
 
-## Праздники
+![Гномики пьют чай у самовара · Gnomes having tea by the samovar](docs/preview.jpg)
+
+---
+
+## Русский
+
+Праздники, эффекты и пасхалки для сайтов: снег, гирлянды, новогодний логотип, сцена с ёлкой,
+гномики, мини-игра. Здесь их разрабатывают, а сайты забирают готовые версии одной командой.
+
+### Как это устроено
+
+- Сайт подключает **один загрузчик** — `site-holidays.js`. Подключил один раз — и всё.
+- Загрузчик смотрит на дату, адрес страницы и пасхалку и сам подгружает нужный праздник из `holidays/`.
+  Вне праздников он почти ничего не весит и ничего не грузит.
+- Праздники не знают вёрстку сайта: сами находят кнопки, карточки и картинки и подстраиваются под любую страницу.
+  Новые страницы и переделанный дизайн не требуют доработок.
+- Без зависимостей и сборки: обычные JS-файлы и картинки.
+
+### Праздники
 
 | id | Когда | Модуль |
 |---|---|---|
-| `winter` | 1 декабря – конец февраля | [holidays/winter.js](holidays/winter.js) — зима и Новый год |
+| `winter` | 1 декабря – конец февраля | [`holidays/winter.js`](holidays/winter.js) — зима и Новый год |
 
-## Подключение на сайт
+### Быстрый старт
 
 ```sh
-./install.sh ../site/assets      # → assets/holidays/site-holidays.js, holidays/*.js, img/*
+git clone https://github.com/FolloGit/site-holidays.git
+./site-holidays/install.sh путь/к/сайту/assets      # → assets/holidays/…
 ```
+
+На каждой странице перед `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>   <!-- перед </body> на каждой странице -->
+<script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>
 ```
 
-Для обновлений положите в сайт скрипт `tools/update-holidays.sh` (лежит в репозитории сайта FolloTeam/site):
+Готово: с 1 декабря на сайте пойдёт снег. Проверить сейчас — открыть страницу с `?holiday=winter`.
+
+### Обновление сайта
+
+Положите в сайт скрипт [`tools/update-holidays.sh`](https://github.com/FolloTeam/site/blob/Prod/tools/update-holidays.sh)
+(из репозитория сайта FolloTeam) и запускайте:
 
 ```sh
-sh tools/update-holidays.sh            # последняя версия из main
-sh tools/update-holidays.sh v1.0.0     # конкретная версия (тег)
+sh tools/update-holidays.sh            # последняя версия
+sh tools/update-holidays.sh v1.0.0     # конкретная версия
 ```
 
-Он держит рабочую копию этого репозитория рядом с сайтом (`../site-holidays`, клонирует при первом запуске),
-ставит файлы в `assets/holidays/` и сам меняет `?v=` в подключении на всех страницах. Дальше — проверить и закоммитить сайт.
+Скрипт держит копию этого репозитория рядом с сайтом (`../site-holidays`), ставит файлы в `assets/holidays/`
+и меняет `?v=` в подключении на всех страницах. Останется проверить и закоммитить сайт.
 
-## Адрес страницы и пасхалка
+### Включение и выключение
 
-- `?holiday=winter` — включить праздник для проверки, `?holiday=off` — выключить всё. Для зимы работает и `?winter=1` / `?winter=0`.
-- **Пасхалка** — элемент с `data-holiday-egg="winter"` (или старым `data-winter-egg`): невидимая кнопка, которая
-  включает праздник в любое время года и выключает повторным нажатием. Выбор запоминается в браузере.
-  На сайте FolloTeam она справа от «МЕРЧ».
+| Как | Что делает |
+|---|---|
+| по дате | праздник включается сам в свой сезон (по часам посетителя) |
+| `?holiday=winter` | включить для проверки |
+| `?holiday=off` | выключить всё |
+| `?winter=1` / `?winter=0` | то же для зимы (старый вариант) |
+| `data-holiday-egg="winter"` | невидимая кнопка-пасхалка: включает праздник в любое время года, повторное нажатие выключает |
+| кнопка-снежинка внизу слева | посетитель может выключить зиму; выбор запоминается |
 
-## Настройки сайта (необязательно, до подключения)
+### Настройки сайта
+
+Необязательно, перед подключением загрузчика:
 
 ```html
 <script>
   window.SITE_HOLIDAYS = {
-    off: ['winter'],               // праздники, которые этому сайту не нужны
-    winter: { favicon: false }     // настройки модуля зимы (см. ниже)
+    off: ['winter'],              // праздники, которые этому сайту не нужны
+    winter: { favicon: false }    // настройки модуля зимы
   };
 </script>
 ```
 
-Консоль: `siteHolidays.list()`, `siteHolidays.active()`, `siteHolidays.load('winter')`, `siteHolidays.version`.
+### Зима и Новый год
 
----
-
-## Зима и Новый год — `holidays/winter.js`
-
-- **Снег.** Погода меняется сама: тихий снег под наклоном → снегопад → метель вбок. Хлопья движутся вместе
-  со страницей при прокрутке (ближние сильнее — есть глубина).
-- **Сугробы на блоках.** Снег копится на кнопках, карточках, панелях и картинках. Основание повторяет
-  скругление углов, на крутой части угла снег не держится. Курсором (пальцем) снег смахивается, комочки падают ниже.
-  Если блок сдвинулся (карусель, ползунок), снег с него осыпается.
-- **Гирлянда** под шапкой сайта, раскачивается от курсора.
-- **Новогодний логотип** вместо текстового «>>FT_»: шапка Санты, олени или гирлянда (случайно), в цвете страницы.
-- **Иконка вкладки** — новогодняя.
-- **Сцена внизу страницы**: ёлка, календарь на столбике, подарки, снеговики разных видов
-  (цилиндр, ведро, вязаная шапка, шапка Санты, наушники, с метлой, маленький), разные гномики.
-- **Мини-игра**: подарки, снеговиков, комья и предметы можно таскать и кидать. Выброшенное за край пропадает.
-  Подарок, попавший в снеговика, ломает его — гномики приходят чинить. Двойной клик по подарку
-  (или сильный бросок) разбивает его — выпадают предметы разной редкости (леденец, монета, пряник, варежка,
-  носок, шар, уточка, сапфир, рубин, звезда, FT-робот), гномики их подбирают и радуются.
-  На телефоне тап подкидывает подарок и ломает снеговика.
-- Кнопка-снежинка в левом нижнем углу выключает режим (запоминается в браузере).
-
-**События** запускаются сами, случайно, когда сцена внизу видна:
+- **Снег** — погода меняется сама: тихий снег, снегопад, метель вбок. Хлопья двигаются вместе со страницей при прокрутке.
+- **Сугробы** на кнопках, карточках и картинках с учётом скруглённых углов. Курсором снег можно смахнуть.
+- **Гирлянда** под шапкой сайта, качается от курсора.
+- **Новогодний логотип** — текстовый «>>FT_» в шапке становится знаком с шапкой Санты, оленями или гирляндой.
+- **Сцена внизу страницы** — ёлка, календарь, подарки, снеговики семи видов и гномики, все разные.
+- **Мини-игра** — подарки и снеговиков можно таскать и кидать. Подарок ломает снеговика, гномики приходят чинить.
+  Двойной клик по подарку разбивает его, и выпадают предметы разной редкости — гномики их подбирают.
+- **События** запускаются сами:
 
 | Событие | Что происходит |
 |---|---|
-| `build` | двое гномиков катают комья и лепят снеговика (и когда снега накопилось много) |
-| `repair` | чинят сломанного снеговика, возвращают шапку |
-| `snowballs` | игра в снежки, сбитые падают; снежком можно сломать снеговика |
-| `sled` | насыпают горку и катаются на санках (горка потом оседает) |
-| `prank` | шалость: передвинуть снеговика или пнуть его |
-| `gifts` | обмен подарками, подарки остаются под ёлкой |
-| `tea` | чаепитие: выносят стол, самовар и баранки, пируют, гости играют в снежки, всё уносят |
+| `build` | двое гномиков катают комья и лепят снеговика |
+| `repair` | чинят сломанного снеговика и возвращают шапку |
+| `snowballs` | игра в снежки |
+| `sled` | насыпают горку и катаются на санках |
+| `prank` | шалость: передвинуть или пнуть снеговика |
+| `gifts` | обмен подарками |
+| `tea` | чаепитие с самоваром и баранками — выносят стол, пируют, играют и всё уносят |
 | `loot` | подбирают добычу из разбитых подарков |
-| `calendar` | гномик проверяет календарь; **в полночь** — отрывает листок с прошедшим днём |
-| `party` | новогодние гуляния с танцами, подарками и салютом (31.12 23:50 – 1.01 5:00 — само) |
-| `santa` | Санта на санях с оленями пролетает над страницей и роняет подарок |
-| `fireworks` | салют над страницей |
+| `calendar` | в полночь гномик отрывает листок календаря |
+| `party` | новогодние гуляния и салют в ночь на 1 января |
+| `santa` | Санта на санях пролетает над страницей и роняет подарок |
+| `fireworks` | салют |
 
-С 24 декабря по 8 января Санта прилетает чаще, а подарков и гуляний больше.
-
-**Разметка на сайте**
+Разметка, которую понимает модуль:
 
 | Атрибут | Зачем |
 |---|---|
-| `data-winter-ignore` | снег на этом элементе не копится |
-| `data-winter-logo="#акцент"` | текстовый знак «>>FT_», который зимой становится новогодним; оранжевый перекрашивается в акцент |
+| `data-winter-ignore` | на этом элементе снег не копится |
+| `data-winter-logo="#ff4f12"` | текстовый знак «>>FT_», который зимой становится новогодним; оранжевый в знаке перекрашивается в указанный цвет |
 
-**Настройки модуля** (`SITE_HOLIDAYS.winter` или `window.FT_WINTER`):
-
-```js
-{
-  img: 'assets/holidays/img/',   // папка с картинками (по умолчанию — рядом с модулем)
-  favicon: false,                // не менять иконку вкладки
-  logo: false,                   // не подменять логотип
-  garland: 'header',             // под каким элементом висит гирлянда
-  ignore: '[data-winter-ignore]',
-  maxFlakes: 260                 // снежинок в сильный снегопад на экране 1440×900
-}
-```
-
-**Консоль** (для презентаций и проверки):
+Консоль (удобно на презентациях):
 
 ```js
-ftWinter.event('tea')        // запустить событие; список — ftWinter.events()
-ftWinter.event('midnight')   // «вчера» на календаре — гномик прибежит и перевернёт
+ftWinter.event('tea')        // запустить событие (список — ftWinter.events())
+ftWinter.event('midnight')   // гномик прибежит и перевернёт календарь
 ftWinter.openGift()          // разбить подарок
 ftWinter.logo('reindeer')    // santa | reindeer | garland
 ftWinter.weather('blizzard') // calm | snow | blizzard
-ftWinter.on() / ftWinter.off()
-ftWinter.sim(600)            // прокрутить время на 600 кадров (для проверки)
-ftWinter.state()             // что сейчас происходит
 ```
 
-**Новое событие** — запись в `EVENTS` в `holidays/winter.js`: вес (как часто), условие и запуск. Запуск создаёт
-гномиков (`mkGnome(side)`) и даёт каждому очередь действий: `run`, `push`, `carry`, `lift`, `throw`, `dig`, `sled`,
-`pause`, `cheer`, `wait`, `do`, `leave`.
+### Демо
+
+[`demo/index.html`](demo/index.html) — страница с кнопками всех событий. Любой статический сервер из корня репозитория:
+
+```sh
+python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winter
+```
+
+### Как добавить праздник
+
+1. Модуль `holidays/<id>.js` — самостоятельный скрипт (за образец — `winter.js`).
+2. Строчка в списке `HOLIDAYS` в `site-holidays.js`: `{ id, file, months }` или `when: function (date) {…}` для точных дат.
+3. Картинки — в `img/`, кнопки — в демо.
+
+### Выпуск версии
+
+1. Поднять `VERSION` в `site-holidays.js` (и версию модуля в его шапке).
+2. Проверить на демо.
+3. Записать изменения в «Версии», закоммитить, поставить тег и запушить:
+   `git tag -a vX.Y.Z -m "site-holidays X.Y.Z" && git push --follow-tags`
+4. На сайтах — `sh tools/update-holidays.sh`.
 
 ---
 
-## Как добавить праздник
+## English
 
-1. Модуль `holidays/<id>.js` — самостоятельный скрипт (за образец взять `winter.js`).
-2. Строчка в `HOLIDAYS` в `site-holidays.js`: `{ id, file, months }` или `when: function (date) {…}` для точных дат,
-   `eggKey` — если праздник включается пасхалкой.
-3. Картинки — в `img/`, кнопки в демо — в `demo/index.html`.
+Holidays, effects and easter eggs for websites: snow, garlands, a New Year logo, a scene with a tree, gnomes
+and a mini-game. They are developed here, and sites pull ready-made versions with one command.
 
-## Выпуск версии
+### How it works
 
-1. Поправить код, поднять `VERSION` в `site-holidays.js` (и версию модуля в его шапке).
-2. Проверить на демо: `demo/index.html?holiday=winter`.
-3. Дописать «Версии», закоммитить, поставить тег и запушить: `git tag -a vX.Y.Z -m "site-holidays X.Y.Z" && git push --follow-tags`.
-4. На сайтах — `sh tools/update-holidays.sh`.
+- A site includes **one loader**, `site-holidays.js`, and never has to touch it again.
+- The loader checks the date, the page URL and the easter egg, then loads the right holiday from `holidays/`.
+  Outside holidays it weighs almost nothing and loads nothing.
+- Holidays don't know the site's markup. They find buttons, cards and images on their own and adapt to any page,
+  so new pages and redesigns need no extra work.
+- No dependencies and no build step: plain JS files and images.
 
-## Структура
+### Holidays
+
+| id | When | Module |
+|---|---|---|
+| `winter` | December 1 – end of February | [`holidays/winter.js`](holidays/winter.js) — winter and New Year |
+
+### Quick start
+
+```sh
+git clone https://github.com/FolloGit/site-holidays.git
+./site-holidays/install.sh path/to/site/assets      # → assets/holidays/…
+```
+
+On every page, before `</body>`:
+
+```html
+<script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>
+```
+
+That's it: from December 1 it snows on the site. To check it now, open a page with `?holiday=winter`.
+
+### Updating a site
+
+Add [`tools/update-holidays.sh`](https://github.com/FolloTeam/site/blob/Prod/tools/update-holidays.sh)
+(from the FolloTeam site repository) to the site and run:
+
+```sh
+sh tools/update-holidays.sh            # latest version
+sh tools/update-holidays.sh v1.0.0     # a specific version
+```
+
+The script keeps a copy of this repository next to the site (`../site-holidays`), installs the files into
+`assets/holidays/` and bumps `?v=` in the include on every page. Then check and commit the site.
+
+### Turning holidays on and off
+
+| How | What it does |
+|---|---|
+| by date | a holiday turns on by itself in its season (visitor's local time) |
+| `?holiday=winter` | force it on for testing |
+| `?holiday=off` | turn everything off |
+| `?winter=1` / `?winter=0` | same for winter (legacy) |
+| `data-holiday-egg="winter"` | hidden easter-egg button: turns the holiday on any time of year, press again to turn it off |
+| snowflake button, bottom left | lets visitors turn winter off; the choice is remembered |
+
+### Site options
+
+Optional, before the loader script:
+
+```html
+<script>
+  window.SITE_HOLIDAYS = {
+    off: ['winter'],              // holidays this site does not want
+    winter: { favicon: false }    // winter module options
+  };
+</script>
+```
+
+### Winter and New Year
+
+- **Snow.** The weather changes by itself: light snow, snowfall, a sideways blizzard. Flakes move with the page when you scroll.
+- **Snow piles** on buttons, cards and images, following rounded corners. You can sweep snow off with the cursor.
+- **Garland** under the site header that sways when the cursor passes.
+- **New Year logo.** The text mark ">>FT_" in the header turns into a version with a Santa hat, reindeer or a garland.
+- **Scene at the bottom of the page:** a tree, a calendar, gifts, seven kinds of snowmen and gnomes that all look different.
+- **Mini-game.** Drag and throw gifts and snowmen. A gift breaks a snowman, and gnomes come to fix it.
+  Double-click a gift to break it open: items of different rarity fall out, and gnomes pick them up.
+- **Events** start on their own:
+
+| Event | What happens |
+|---|---|
+| `build` | two gnomes roll snowballs and build a snowman |
+| `repair` | they fix a broken snowman and put its hat back |
+| `snowballs` | a snowball fight |
+| `sled` | they build a hill and sled down it |
+| `prank` | a prank: move or kick a snowman |
+| `gifts` | a gift exchange |
+| `tea` | tea with a samovar and bagels: they bring a table, feast, play and carry everything away |
+| `loot` | they pick up loot from broken gifts |
+| `calendar` | at midnight a gnome tears a page off the calendar |
+| `party` | New Year's Eve party with fireworks |
+| `santa` | Santa's sleigh flies over the page and drops a gift |
+| `fireworks` | fireworks |
+
+Markup the module understands:
+
+| Attribute | Purpose |
+|---|---|
+| `data-winter-ignore` | snow never piles up on this element |
+| `data-winter-logo="#ff4f12"` | the ">>FT_" text mark that becomes festive in winter; orange in the mark is recoloured to the given colour |
+
+Console (handy for demos):
+
+```js
+ftWinter.event('tea')        // run an event (list: ftWinter.events())
+ftWinter.event('midnight')   // a gnome runs over and flips the calendar
+ftWinter.openGift()          // break a gift open
+ftWinter.logo('reindeer')    // santa | reindeer | garland
+ftWinter.weather('blizzard') // calm | snow | blizzard
+```
+
+### Demo
+
+[`demo/index.html`](demo/index.html) has buttons for every event. Serve the repository root with any static server:
+
+```sh
+python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winter
+```
+
+### Adding a holiday
+
+1. Create a module `holidays/<id>.js`, a self-contained script (use `winter.js` as the template).
+2. Add an entry to `HOLIDAYS` in `site-holidays.js`: `{ id, file, months }`, or `when: function (date) {…}` for exact dates.
+3. Put images in `img/` and add buttons to the demo.
+
+### Releasing a version
+
+1. Bump `VERSION` in `site-holidays.js` (and the module version in its header).
+2. Check it on the demo page.
+3. Note the changes under "Versions", commit, tag and push:
+   `git tag -a vX.Y.Z -m "site-holidays X.Y.Z" && git push --follow-tags`
+4. On each site, run `sh tools/update-holidays.sh`.
+
+---
+
+## Структура · Layout
 
 ```
-site-holidays.js    загрузчик — единственное, что подключают сайты
-holidays/           модули праздников (winter.js — зима и Новый год)
-img/                картинки праздников (новогодняя иконка и знаки >>FT_ из «Логотипы и брендинг/FolloTeam-logos»)
-demo/index.html     демо-страница с кнопками событий
-install.sh          установка на сайт
+site-holidays.js    загрузчик — единственное, что подключают сайты · the loader, the only file sites include
+holidays/           модули праздников · holiday modules (winter.js)
+img/                картинки праздников · holiday images
+demo/index.html     демо-страница · demo page
+docs/               картинки для README · README images
+install.sh          установка на сайт · install into a site
 ```
 
-## Версии
+## Версии · Versions
 
-- **1.0.0** — пакет site-holidays: загрузчик праздников, модуль зимы `winter.js` 2.0.0
-  (снег движется вместе со страницей; события гномиков — снежки, горка, шалости, обмен подарками, чаепитие,
-  календарь в полночь, новогодние гуляния; Санта, салют, добыча из подарков, виды снеговиков и гномиков).
-- До пакета — `ft-winter` 1.x–2.0.0: снег, сугробы со скруглениями, гирлянда, сцена с ёлкой, гномики,
-  мини-игра, новогодний логотип, пасхалка.
+- **1.0.0**
+  - Пакет site-holidays: загрузчик и модуль зимы `winter.js` 2.0.0. Снег двигается вместе со страницей; события гномиков; Санта, салют, добыча из подарков; виды снеговиков и гномиков.
+  - The site-holidays package: a loader and the `winter.js` 2.0.0 module. Snow moves with the page; gnome events; Santa, fireworks, loot from gifts; snowman and gnome variety.
+- **ft-winter 1.x–2.0.0**
+  - Зимний режим до пакета: снег, сугробы, гирлянда, сцена с ёлкой, гномики, мини-игра, новогодний логотип, пасхалка.
+  - Winter mode before the package: snow, piles, garland, tree scene, gnomes, mini-game, New Year logo, easter egg.
+
+---
+
+© FolloTeam · [folloteam.ru](https://folloteam.ru)
