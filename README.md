@@ -46,7 +46,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 На каждой странице перед `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.1.1" defer></script>
 ```
 
 Готово: с 1 декабря на сайте пойдёт снег. Проверить сейчас — открыть страницу с `?holiday=winter`.
@@ -58,7 +58,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 
 ```sh
 sh tools/update-holidays.sh            # последняя версия
-sh tools/update-holidays.sh v1.1.0     # конкретная версия
+sh tools/update-holidays.sh v1.1.1     # конкретная версия
 ```
 
 Скрипт держит копию этого репозитория рядом с сайтом (`../site-holidays`), ставит файлы в `assets/holidays/`
@@ -191,7 +191,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 On every page, before `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.1.1" defer></script>
 ```
 
 That's it: from December 1 it snows on the site. To check it now, open a page with `?holiday=winter`.
@@ -203,7 +203,7 @@ Add [`tools/update-holidays.sh`](https://github.com/FolloTeam/site/blob/Prod/too
 
 ```sh
 sh tools/update-holidays.sh            # latest version
-sh tools/update-holidays.sh v1.1.0     # a specific version
+sh tools/update-holidays.sh v1.1.1     # a specific version
 ```
 
 The script keeps a copy of this repository next to the site (`../site-holidays`), installs the files into
@@ -313,6 +313,9 @@ install.sh          установка на сайт · install into a site
 
 ## Версии · Versions
 
+- **1.1.1**
+  - Кнопки ♥ и 福 помечены так же, как кнопка-снежинка (`data-winter-ignore`, плюс `data-holiday-btn`), — сайты, которые уже переставляют снежинку, переставят и их. Пока праздник включён, на `<html>` стоят классы `ft-holiday-on` и `ft-valentine-on` / `ft-lunar-on`.
+  - The ♥ and 福 buttons carry the same marker as the snowflake button (`data-winter-ignore`, plus `data-holiday-btn`), so sites that already reposition the snowflake reposition them too. While a holiday is on, `<html>` gets `ft-holiday-on` and `ft-valentine-on` / `ft-lunar-on`.
 - **1.1.0**
   - Новые праздники: День влюблённых (`valentine.js`) и китайский Новый год (`lunar.js`) — эффекты, праздничный логотип `>>FT_`, сцена с человечками и сценками внизу страницы.
   - Общие файлы: `scene.js` (сцена внизу страницы) и `logo.js` (праздничный логотип).

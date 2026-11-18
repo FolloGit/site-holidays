@@ -1,5 +1,5 @@
 /*!
- * site-holidays.js 1.1.0
+ * site-holidays.js 1.1.1
  * Праздничные режимы для сайтов / Holiday modes for websites — FolloTeam · https://folloteam.ru
  *
  * RU  Сайт подключает только этот файл, один раз и навсегда. Загрузчик смотрит на дату,
@@ -10,7 +10,7 @@
  *     the page URL and the easter egg, then loads the right holiday from holidays/.
  *     A new holiday is one entry in HOLIDAYS below plus a holidays/<id>.js file; sites stay untouched.
  *
- *   <script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
+ *   <script src="assets/holidays/site-holidays.js?v=1.1.1" defer></script>
  *
  * Праздники / Holidays:
  *   valentine — День святого Валентина · Valentine's Day, Feb 10–15 (holidays/valentine.js)
@@ -39,7 +39,7 @@
   'use strict';
   if (window.siteHolidays) return;
 
-  var VERSION = '1.1.0';
+  var VERSION = '1.1.1';
   var SCRIPT = document.currentScript;
   // папка загрузчика: модули и картинки лежат рядом · loader folder: modules and images live next to it
   var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/[^\/?#]*([?#].*)?$/, '') : 'assets/holidays/';

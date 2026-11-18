@@ -224,6 +224,9 @@
     btn.style.opacity = on ? '1' : '.55';
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     favicon(on);
+    // класс на <html>, пока праздник включён · class on <html> while the holiday is on
+    document.documentElement.classList.toggle('ft-holiday-on', on);
+    document.documentElement.classList.toggle('ft-lunar-on', on);
     if (scene) { if (on) scene.start(); else scene.stop(); }
     logo(on);
     if (on) { last = 0; lastScroll = null; drops = []; if (!raf) raf = requestAnimationFrame(frame); }
@@ -237,6 +240,7 @@
   function boot() {
     cv = document.createElement('canvas');
     cv.setAttribute('aria-hidden', 'true');
+    cv.setAttribute('data-winter-ignore', '');
     cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483000';
     ctx = cv.getContext('2d');
     document.body.appendChild(cv);
@@ -246,6 +250,8 @@
     var an = animal();
     btn = document.createElement('button');
     btn.type = 'button';
+    // как у кнопки зимы: сайты уже умеют её переставлять · same as the winter button: sites already know how to place it
+    btn.setAttribute('data-winter-ignore', ''); btn.setAttribute('data-holiday-btn', 'lunar');
     btn.title = 'Китайский Новый год — год: ' + an[0] + '. Вкл / выкл · Lunar New Year — Year of the ' + an[1] + '. On / off';
     btn.setAttribute('aria-label', btn.title);
     btn.textContent = '福';                      // 福 — «счастье» · "good fortune"

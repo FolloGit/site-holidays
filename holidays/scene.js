@@ -416,10 +416,12 @@
       isSetup = true;
       cv = document.createElement('canvas');
       cv.setAttribute('aria-hidden', 'true');
+      cv.setAttribute('data-winter-ignore', '');
       cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147482990';
       ctx = cv.getContext('2d');
       ground = document.createElement('div');
       ground.setAttribute('aria-hidden', 'true');
+      ground.setAttribute('data-winter-ignore', '');
       ground.style.cssText = 'position:relative;width:100%;pointer-events:none;background:' + (theme.ground || 'transparent');
       addEventListener('resize', function () { if (running) resize(); });
       addEventListener('pointermove', onMove, { passive: true });

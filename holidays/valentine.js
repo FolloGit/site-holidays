@@ -158,6 +158,9 @@
     btn.style.opacity = on ? '1' : '.55';
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     favicon(on);
+    // класс на <html>, пока праздник включён · class on <html> while the holiday is on
+    document.documentElement.classList.toggle('ft-holiday-on', on);
+    document.documentElement.classList.toggle('ft-valentine-on', on);
     if (scene) { if (on) scene.start(); else scene.stop(); }
     logo(on);
     if (on) { last = 0; lastScroll = null; hearts = []; if (!raf) raf = requestAnimationFrame(frame); }
@@ -171,6 +174,7 @@
   function boot() {
     cv = document.createElement('canvas');
     cv.setAttribute('aria-hidden', 'true');
+    cv.setAttribute('data-winter-ignore', '');
     cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483000';
     ctx = cv.getContext('2d');
     document.body.appendChild(cv);
@@ -179,6 +183,8 @@
 
     btn = document.createElement('button');
     btn.type = 'button';
+    // как у кнопки зимы: сайты уже умеют её переставлять · same as the winter button: sites already know how to place it
+    btn.setAttribute('data-winter-ignore', ''); btn.setAttribute('data-holiday-btn', 'valentine');
     btn.title = 'День влюблённых: вкл / выкл · Valentine’s Day on / off';
     btn.setAttribute('aria-label', btn.title);
     btn.textContent = '♥';
