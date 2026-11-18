@@ -1,5 +1,5 @@
 /*!
- * site-holidays.js 1.0.0
+ * site-holidays.js 1.1.0
  * Праздничные режимы для сайтов / Holiday modes for websites — FolloTeam · https://folloteam.ru
  *
  * RU  Сайт подключает только этот файл, один раз и навсегда. Загрузчик смотрит на дату,
@@ -10,10 +10,12 @@
  *     the page URL and the easter egg, then loads the right holiday from holidays/.
  *     A new holiday is one entry in HOLIDAYS below plus a holidays/<id>.js file; sites stay untouched.
  *
- *   <script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>
+ *   <script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
  *
  * Праздники / Holidays:
- *   winter — зима и Новый год · winter and New Year, Dec 1 – end of Feb (holidays/winter.js)
+ *   valentine — День святого Валентина · Valentine's Day, Feb 10–15 (holidays/valentine.js)
+ *   lunar     — китайский Новый год · Lunar New Year, −2…+7 days around it (holidays/lunar.js)
+ *   winter    — зима и Новый год · winter and New Year, Dec 1 – end of Feb (holidays/winter.js)
  *
  * Адрес / URL:
  *   ?holiday=winter   — включить праздник · force a holiday on
@@ -37,7 +39,7 @@
   'use strict';
   if (window.siteHolidays) return;
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var SCRIPT = document.currentScript;
   // папка загрузчика: модули и картинки лежат рядом · loader folder: modules and images live next to it
   var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/[^\/?#]*([?#].*)?$/, '') : 'assets/holidays/';
@@ -49,7 +51,19 @@
   //   months  — месяцы 1–12 (или when: function (date) {…} для точных дат) · months 1–12, or when(date) for exact dates
   //   eggKey  — ключ localStorage «включено пасхалкой» · localStorage key for "enabled via easter egg"
   //   offKey  — ключ localStorage «выключено посетителем в сезон» · localStorage key for "turned off in season"
+  // Китайский Новый год: первый день лунного года, праздник — с −2 по +7 день · Lunar New Year: day one of the lunar year, shown −2…+7 days
+  var LUNAR = { 2026: [2, 17], 2027: [2, 6], 2028: [1, 26], 2029: [2, 13], 2030: [2, 3], 2031: [1, 23], 2032: [2, 11], 2033: [1, 31], 2034: [2, 19], 2035: [2, 8], 2036: [1, 28] };
+  function lunarSeason(d) {
+    var y = d.getFullYear(), n = LUNAR[y];
+    if (!n) return false;
+    var days = Math.floor((new Date(y, d.getMonth(), d.getDate()) - new Date(y, n[0] - 1, n[1])) / 864e5);
+    return days >= -2 && days <= 7;
+  }
+
   var HOLIDAYS = [
+    // короткие праздники — раньше сезонных: первый подходящий побеждает · short holidays go before seasons: first match wins
+    { id: 'valentine', file: 'holidays/valentine.js', when: function (d) { return d.getMonth() === 1 && d.getDate() >= 10 && d.getDate() <= 15; }, eggKey: 'ftValentineEgg', offKey: 'ftValentine' },
+    { id: 'lunar', file: 'holidays/lunar.js', when: lunarSeason, eggKey: 'ftLunarEgg', offKey: 'ftLunar' },
     { id: 'winter', file: 'holidays/winter.js', months: [12, 1, 2], eggKey: 'ftWinterEgg', offKey: 'ftWinter' }
   ];
 

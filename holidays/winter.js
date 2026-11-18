@@ -1,5 +1,5 @@
 /*!
- * site-holidays · holidays/winter.js 2.0.0
+ * site-holidays · holidays/winter.js 2.1.0
  * Зимний режим сайта / Winter mode for websites — FolloTeam · https://folloteam.ru
  *
  * RU  Снег, сугробы на блоках, гирлянда, новогодний логотип, сцена с ёлкой внизу,
@@ -63,7 +63,7 @@
   var user = window.FT_WINTER || {};
   for (var k in user) if (Object.prototype.hasOwnProperty.call(user, k)) CFG[k] = user[k];
   if (CFG.favicon == null) CFG.favicon = CFG.img + 'winter-favicon.svg';
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
 
   /* ---------- когда включаться · when to turn on ---------- */
   var q = /[?&]winter=(0|1)/.exec(location.search);
@@ -879,8 +879,16 @@
   function stepGnome(g, dt, t) {
     if (g.gone) return;
     if (g.knock > 0) { g.knock -= dt; g.moving = false; return; }
+    // тык курсором: подпрыгнуть от радости · poked by the cursor: a happy hop
+    if (g.poke > 0) {
+      g.poke -= dt; g.moving = false; g.pose = 'up';
+      g.hop = Math.max(0, Math.sin((1 - g.poke / POKE) * Math.PI)) * 7 * P;
+      return;
+    }
     var a = g.q[0];
     g.pose = 'stand'; g.hop = 0;
+    // стоит без дела — смотрит на курсор рядом · idle: looks at a nearby cursor
+    if ((!a || a.k === 'wait' || a.k === 'pause') && mouse && Math.abs(mouse.x - g.x) < 140 && Math.abs(mouse.y - (gBaseNow + floorY(g.x))) < 160) g.flip = mouse.x < g.x;
     if (!a) return;
     var done = false, b = a.b;
     switch (a.k) {
@@ -1584,7 +1592,28 @@
    * Мини-игра: взять объект мышкой, тащить, кинуть
    * Mini-game: grab, drag and throw objects with the mouse
    * ========================================================= */
-  var drag = null, hoverSet = false, suppressClick = false, gBaseNow = 0;
+  var drag = null, hoverSet = false, suppressClick = false, gBaseNow = 0, mouse = null, POKE = 26;
+
+  // гномики и курсор: наведение — «рука», клик — прыжок и искры, три быстрых клика — падает
+  // gnomes and the cursor: hover shows a hand, a click makes a hop with sparks, three quick clicks knock it over
+  function gnomeHit(x, y) {
+    if (!ev) return null;
+    for (var i = ev.gn.length - 1; i >= 0; i--) {
+      var g = ev.gn[i];
+      if (g.gone || g.knock > 0) continue;
+      var by = gBaseNow + floorY(g.x) - (g.hop || 0);
+      if (Math.abs(x - g.x) < 6 * P && y < by + 2 && y > by - 18 * P) return g;
+    }
+    return null;
+  }
+  function pokeGnome(g, x) {
+    var now = performance.now();
+    g.pokes = (g.pokeT && now - g.pokeT < 700 ? g.pokes || 0 : 0) + 1; g.pokeT = now;
+    if (g.pokes >= 3) { g.pokes = 0; g.poke = 0; g.knock = 70; g.kdir = x < g.x ? 1 : -1; return; }
+    g.poke = POKE; g.flip = x < g.x;
+    var by = gBaseNow + floorY(g.x) - 14 * P;
+    for (var k = 0; k < 10; k++) sky.sparks.push({ x: g.x + rr(-4, 4) * P, y: by + rr(-3, 3) * P, vx: rr(-1.2, 1.2), vy: -rr(0.6, 1.8), life: rr(25, 45), c: pick(['#ffd23f', '#ff5fa2', '#ffffff', '#5b96f5']) });
+  }
   var trail = [];
   function sceneHit(x, y) {
     var ly = y - gBaseNow;
@@ -1611,6 +1640,8 @@
   }
   function onPointerDown(e) {
     if (!running || e.button > 0) return;
+    var gh = gnomeHit(e.clientX, e.clientY);
+    if (gh) { e.preventDefault(); e.stopPropagation(); suppressClick = true; pokeGnome(gh, e.clientX); return; }
     var o = sceneHit(e.clientX, e.clientY);
     if (!o) return;
     if (e.pointerType === 'touch') {                 // на телефоне — тап: пнуть · on phones a tap kicks the object
@@ -1632,7 +1663,7 @@
   }
   function onPointerMove(e) {
     if (!running) return;
-    if (e.pointerType !== 'touch') sweepAt(e.clientX, e.clientY);
+    if (e.pointerType !== 'touch') { sweepAt(e.clientX, e.clientY); mouse = { x: e.clientX, y: e.clientY }; }
     if (drag) {
       e.preventDefault();
       var o = drag.o, now = performance.now();
@@ -1653,7 +1684,7 @@
       if (o.kind === 'gift') { o.rot = clamp(vx * 0.04, -0.6, 0.6); var s2 = trailSpeed(); o.vx = s2[0]; o.vy = s2[1]; if (Math.hypot(s2[0], s2[1]) > 8) giftHits(o, (now - T0) / 1000); }
       return;
     }
-    if (e.pointerType === 'mouse') setCursor(sceneHit(e.clientX, e.clientY) ? 'grab' : '');
+    if (e.pointerType === 'mouse') setCursor(gnomeHit(e.clientX, e.clientY) ? 'pointer' : sceneHit(e.clientX, e.clientY) ? 'grab' : '');
   }
   function trailSpeed() {
     if (trail.length < 2) return [0, 0];
@@ -1827,6 +1858,10 @@
         if (ff.y < -40 || ff.y > H + 40) ff.y = (((ff.y + 40) % span) + span) % span - 40;
       }
       for (i = 0; i < bits.length; i++) bits[i].y -= dsy;
+      // небо тоже в пространстве страницы: Санта, искры и салют уезжают вместе с ней · the sky lives in page space too
+      if (sky.santa) sky.santa.y0 -= dsy;
+      for (i = 0; i < sky.sparks.length; i++) sky.sparks[i].y -= dsy;
+      for (i = 0; i < sky.rockets.length; i++) sky.rockets[i].y -= dsy;
     }
     for (i = flakes.length - 1; i >= 0; i--) {
       var f = flakes[i];

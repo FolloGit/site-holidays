@@ -28,7 +28,13 @@
 
 | id | Когда | Модуль |
 |---|---|---|
+| `valentine` | 10–15 февраля | [`holidays/valentine.js`](holidays/valentine.js) — День влюблённых: сердечки, шлейф за курсором, салют из сердец по клику, логотип с сердечками или стрелой Купидона; внизу человечки: свидание, букет, Купидон, валентинка, серенада |
+| `lunar` | за 2 дня до китайского Нового года и 7 дней после (даты 2026–2036 в модуле) | [`holidays/lunar.js`](holidays/lunar.js) — фонарики под шапкой, монетки и красные конверты, хлопушки по клику, логотип с фонариками или монетками; внизу человечки: танец дракона, хлопушки, красные конверты, танец льва, небесные фонарики |
 | `winter` | 1 декабря – конец февраля | [`holidays/winter.js`](holidays/winter.js) — зима и Новый год |
+
+Когда даты совпадают, побеждает праздник выше в таблице: в День влюблённых и в китайский Новый год вместо зимы показывается он.
+
+Общие файлы: [`holidays/scene.js`](holidays/scene.js) — движок сцены внизу страницы (земля, человечки, сценки; человечки смотрят на курсор, от клика подпрыгивают, от трёх быстрых кликов падают), [`holidays/logo.js`](holidays/logo.js) — праздничный SVG поверх текстового знака `>>FT_`. Модули праздников подгружают их сами.
 
 ### Быстрый старт
 
@@ -40,7 +46,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 На каждой странице перед `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
 ```
 
 Готово: с 1 декабря на сайте пойдёт снег. Проверить сейчас — открыть страницу с `?holiday=winter`.
@@ -52,7 +58,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 
 ```sh
 sh tools/update-holidays.sh            # последняя версия
-sh tools/update-holidays.sh v1.0.0     # конкретная версия
+sh tools/update-holidays.sh v1.1.0     # конкретная версия
 ```
 
 Скрипт держит копию этого репозитория рядом с сайтом (`../site-holidays`), ставит файлы в `assets/holidays/`
@@ -167,7 +173,13 @@ and a mini-game. They are developed here, and sites pull ready-made versions wit
 
 | id | When | Module |
 |---|---|---|
+| `valentine` | February 10–15 | [`holidays/valentine.js`](holidays/valentine.js) — Valentine's Day: hearts, a cursor trail, heart bursts on click, a logo with hearts or Cupid's arrow; people at the bottom: a date, flowers, Cupid, a valentine card, a serenade |
+| `lunar` | 2 days before Lunar New Year to 7 days after (dates for 2026–2036 in the module) | [`holidays/lunar.js`](holidays/lunar.js) — lanterns under the header, coins and red envelopes, firecrackers on click, a logo with lanterns or coins; people at the bottom: dragon dance, firecrackers, red envelopes, lion dance, sky lanterns |
 | `winter` | December 1 – end of February | [`holidays/winter.js`](holidays/winter.js) — winter and New Year |
+
+When dates overlap, the holiday higher in the table wins: on Valentine's Day and Lunar New Year it replaces winter.
+
+Shared files: [`holidays/scene.js`](holidays/scene.js) is the bottom scene engine (ground, people, plays; people turn to the cursor, hop on click, fall over after three quick clicks), [`holidays/logo.js`](holidays/logo.js) lays a holiday SVG over the `>>FT_` text mark. Holiday modules load them on their own.
 
 ### Quick start
 
@@ -179,7 +191,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 On every page, before `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.0.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.1.0" defer></script>
 ```
 
 That's it: from December 1 it snows on the site. To check it now, open a page with `?holiday=winter`.
@@ -191,7 +203,7 @@ Add [`tools/update-holidays.sh`](https://github.com/FolloTeam/site/blob/Prod/too
 
 ```sh
 sh tools/update-holidays.sh            # latest version
-sh tools/update-holidays.sh v1.0.0     # a specific version
+sh tools/update-holidays.sh v1.1.0     # a specific version
 ```
 
 The script keeps a copy of this repository next to the site (`../site-holidays`), installs the files into
@@ -292,7 +304,7 @@ python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winte
 
 ```
 site-holidays.js    загрузчик — единственное, что подключают сайты · the loader, the only file sites include
-holidays/           модули праздников · holiday modules (winter.js)
+holidays/           модули праздников · holiday modules (winter.js, valentine.js, lunar.js, scene.js, logo.js)
 img/                картинки праздников · holiday images
 demo/index.html     демо-страница · demo page
 docs/               картинки для README · README images
@@ -301,6 +313,13 @@ install.sh          установка на сайт · install into a site
 
 ## Версии · Versions
 
+- **1.1.0**
+  - Новые праздники: День влюблённых (`valentine.js`) и китайский Новый год (`lunar.js`) — эффекты, праздничный логотип `>>FT_`, сцена с человечками и сценками внизу страницы.
+  - Общие файлы: `scene.js` (сцена внизу страницы) и `logo.js` (праздничный логотип).
+  - Зима `winter.js` 2.1.0: Санта, искры и салют прокручиваются вместе со страницей; гномики реагируют на курсор — поворачиваются, подпрыгивают от клика, падают от трёх быстрых кликов.
+  - New holidays: Valentine's Day (`valentine.js`) and Lunar New Year (`lunar.js`) — effects, a festive `>>FT_` logo, a bottom scene with people and little plays.
+  - Shared files: `scene.js` (bottom scene) and `logo.js` (holiday logo).
+  - Winter `winter.js` 2.1.0: Santa, sparks and fireworks scroll with the page; gnomes react to the cursor — they turn, hop on click and fall over after three quick clicks.
 - **1.0.0**
   - Пакет site-holidays: загрузчик и модуль зимы `winter.js` 2.0.0. Снег двигается вместе со страницей; события гномиков; Санта, салют, добыча из подарков; виды снеговиков и гномиков.
   - The site-holidays package: a loader and the `winter.js` 2.0.0 module. Snow moves with the page; gnome events; Santa, fireworks, loot from gifts; snowman and gnome variety.

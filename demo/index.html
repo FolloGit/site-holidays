@@ -36,20 +36,25 @@
     <p>Страница для проверки плагина. Праздник включается сам по дате; для проверки — <code>?holiday=winter</code>. Невидимая пасхалка — справа от «МЕРЧ».
        Внизу страницы — сцена с ёлкой: подарки и снеговиков можно таскать мышкой, двойной клик по подарку его открывает.</p>
     <div class="btns">
-      <button class="b" onclick="ftWinter.event('tea')">Чаепитие</button>
-      <button class="b" onclick="ftWinter.event('snowballs')">Снежки</button>
-      <button class="b" onclick="ftWinter.event('sled')">Горка</button>
-      <button class="b" onclick="ftWinter.event('prank')">Шалость</button>
-      <button class="b" onclick="ftWinter.event('gifts')">Обмен подарками</button>
-      <button class="b" onclick="ftWinter.event('build')">Слепить снеговика</button>
-      <button class="b" onclick="ftWinter.event('midnight')">Полночь (календарь)</button>
-      <button class="b" onclick="ftWinter.event('party')">Новогодние гуляния</button>
-      <button class="b l" onclick="ftWinter.event('santa')">Санта</button>
-      <button class="b l" onclick="ftWinter.event('fireworks')">Салют</button>
-      <button class="b l" onclick="ftWinter.openGift()">Открыть подарок</button>
-      <button class="b l" onclick="ftWinter.weather('blizzard')">Метель</button>
-      <button class="b l" onclick="ftWinter.weather('calm')">Тихий снег</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('tea')">Чаепитие</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('snowballs')">Снежки</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('sled')">Горка</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('prank')">Шалость</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('gifts')">Обмен подарками</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('build')">Слепить снеговика</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('midnight')">Полночь (календарь)</button>
+      <button class="b" onclick="window.ftWinter && ftWinter.event('party')">Новогодние гуляния</button>
+      <button class="b l" onclick="window.ftWinter && ftWinter.event('santa')">Санта</button>
+      <button class="b l" onclick="window.ftWinter && ftWinter.event('fireworks')">Салют</button>
+      <button class="b l" onclick="window.ftWinter && ftWinter.openGift()">Открыть подарок</button>
+      <button class="b l" onclick="window.ftWinter && ftWinter.weather('blizzard')">Метель</button>
+      <button class="b l" onclick="window.ftWinter && ftWinter.weather('calm')">Тихий снег</button>
     </div>
+    <p>Другие праздники: <a href="?holiday=winter" style="color:#5b96f5">зима</a> ·
+       <a href="?holiday=valentine" style="color:#ff4f6d">День влюблённых</a> ·
+       <a href="?holiday=lunar" style="color:#ffcc3f">китайский Новый год</a> ·
+       <a href="?holiday=off" style="color:inherit">выключить всё</a></p>
+    <div class="btns" id="hol-btns"></div>
   </section>
   <section class="grid">
     <div class="tile">Карточка 1</div><div class="tile" style="border-radius: 40px">Скругление 40px</div>
@@ -59,5 +64,17 @@
 </main>
 <footer><span class="logo" data-winter-logo="#ff4f12"><span>&gt;&gt;</span>FT<span>_</span></span> · футер</footer>
 <script src="../site-holidays.js" defer></script>
+<script>
+  // кнопки сценок и логотипов для Дня влюблённых и китайского Нового года · play and logo buttons for Valentine's and Lunar New Year
+  (function wait(n) {
+    var m = window.ftValentine ? [ftValentine, ['hearts', 'arrow']] : window.ftLunar ? [ftLunar, ['lanterns', 'coins']] : null;
+    if (!m || !m[0].events().length) { if (n < 50) setTimeout(function () { wait(n + 1); }, 200); return; }
+    var box = document.getElementById('hol-btns'), add = function (text, fn, light) {
+      var b = document.createElement('button'); b.className = 'b' + (light ? ' l' : ''); b.textContent = text; b.onclick = fn; box.appendChild(b);
+    };
+    m[0].events().forEach(function (e) { add(e.title, function () { m[0].event(e.id); document.querySelector('footer').scrollIntoView({ behavior: 'smooth' }); }); });
+    m[1].forEach(function (l) { add('Логотип: ' + l, function () { m[0].logo(l); }, true); });
+  })(0);
+</script>
 </body>
 </html>
