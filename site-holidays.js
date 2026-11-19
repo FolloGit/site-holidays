@@ -13,9 +13,17 @@
  *   <script src="assets/holidays/site-holidays.js?v=1.2.0" defer></script>
  *
  * Праздники / Holidays:
- *   valentine — День святого Валентина · Valentine's Day, Feb 10–15 (holidays/valentine.js)
- *   lunar     — китайский Новый год · Lunar New Year, −2…+7 days around it (holidays/lunar.js)
- *   winter    — зима и Новый год · winter and New Year, Dec 1 – end of Feb (holidays/winter.js)
+ *   winter       — зима и Новый год · winter and New Year, Dec 1 – end of Feb (holidays/winter.js)
+ *   lunar        — китайский Новый год · Lunar New Year, −2…+7 days around it
+ *   valentine    — День святого Валентина · Valentine's Day, Feb 10–15
+ *   aprilfools   — День смеха · April Fools' Day, Apr 1
+ *   cosmonautics — День космонавтики · Human Space Flight Day, Apr 10–13
+ *   earth        — День Земли · Earth Day, Apr 20–23
+ *   moon         — День Луны · International Moon Day, Jul 18–21
+ *   programmer   — День программиста · Programmer's Day, day 256 ±1 (Sep 12–14)
+ *   halloween    — Хэллоуин · Halloween, Oct 25–31
+ *   birthday     — День рождения FolloTeam · FolloTeam's birthday, date ±1 day (SITE_HOLIDAYS.birthday.date = 'MM-DD')
+ *   Все, кроме зимы, работают на общем holidays/kit.js · All but winter run on the shared holidays/kit.js
  *
  * Адрес / URL:
  *   ?holiday=winter   — включить праздник · force a holiday on
@@ -73,12 +81,47 @@
   //   eggKey, offKey — ключи localStorage самого модуля · the module's own localStorage keys
   // Новый праздник попадает в круг пасхалки сам — достаточно строчки здесь.
   // A new holiday joins the easter-egg cycle on its own — one entry here is enough.
+  // даты: месяц 1–12, день; окно включительно · dates: month 1–12, day; inclusive window
+  function days(m1, d1, m2, d2) {
+    return function (d) { var v = (d.getMonth() + 1) * 100 + d.getDate(); return v >= m1 * 100 + d1 && v <= m2 * 100 + d2; };
+  }
+  // День программиста — 256-й день года (13 сентября, в високосный — 12-го), ±1 день
+  // Programmer's Day is day 256 of the year (Sep 13, Sep 12 in leap years), ±1 day
+  function programmerSeason(d) {
+    var doy = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(d.getFullYear(), 0, 0)) / 864e5);
+    return doy >= 255 && doy <= 257;
+  }
+  // День рождения FolloTeam: дата 'ММ-ДД' в SITE_HOLIDAYS.birthday.date или здесь; без даты — только пасхалкой и ?holiday=birthday
+  // FolloTeam's birthday: 'MM-DD' in SITE_HOLIDAYS.birthday.date or here; without a date only via the egg and ?holiday=birthday
+  var BIRTHDAY = (CFG.birthday && CFG.birthday.date) || null;
+  function birthdaySeason(d) {
+    var m = /^(\d\d)-(\d\d)$/.exec(BIRTHDAY || '');
+    if (!m) return false;
+    var b = new Date(d.getFullYear(), +m[1] - 1, +m[2]), t = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    return Math.abs(t - b) <= 864e5;
+  }
+
   var HOLIDAYS = [
     // короткие праздники — раньше сезонных: первый подходящий побеждает · short holidays go before seasons: first match wins
-    { id: 'valentine', file: 'holidays/valentine.js', api: 'ftValentine', title: 'День влюблённых', icon: '♥', color: '#ff4f6d', order: 30,
-      when: function (d) { return d.getMonth() === 1 && d.getDate() >= 10 && d.getDate() <= 15; }, eggKey: 'ftValentineEgg', offKey: 'ftValentine' },
-    { id: 'lunar', file: 'holidays/lunar.js', api: 'ftLunar', title: 'Китайский Новый год', icon: '福', color: '#ffcc3f', order: 20,
+    // kit: true — модулю нужен общий holidays/kit.js · the module needs the shared holidays/kit.js
+    { id: 'valentine', file: 'holidays/valentine.js', kit: true, api: 'ftValentine', title: 'День влюблённых', icon: '♥', color: '#ff4f6d', order: 30,
+      when: days(2, 10, 2, 15), eggKey: 'ftValentineEgg', offKey: 'ftValentine' },
+    { id: 'lunar', file: 'holidays/lunar.js', kit: true, api: 'ftLunar', title: 'Китайский Новый год', icon: '福', color: '#ffcc3f', order: 20,
       when: lunarSeason, eggKey: 'ftLunarEgg', offKey: 'ftLunar' },
+    { id: 'aprilfools', file: 'holidays/aprilfools.js', kit: true, api: 'ftAprilfools', title: 'День смеха', icon: '☺', color: '#ffd23f', order: 40,
+      when: days(4, 1, 4, 1), eggKey: 'ftAprilfoolsEgg', offKey: 'ftAprilfools' },
+    { id: 'cosmonautics', file: 'holidays/cosmonautics.js', kit: true, api: 'ftCosmonautics', title: 'День космонавтики', icon: '✦', color: '#7ab8ff', order: 50,
+      when: days(4, 10, 4, 13), eggKey: 'ftCosmonauticsEgg', offKey: 'ftCosmonautics' },
+    { id: 'earth', file: 'holidays/earth.js', kit: true, api: 'ftEarth', title: 'День Земли', icon: '❀', color: '#5cc96b', order: 60,
+      when: days(4, 20, 4, 23), eggKey: 'ftEarthEgg', offKey: 'ftEarth' },
+    { id: 'moon', file: 'holidays/moon.js', kit: true, api: 'ftMoon', title: 'День Луны', icon: '☾', color: '#d8dce6', order: 70,
+      when: days(7, 18, 7, 21), eggKey: 'ftMoonEgg', offKey: 'ftMoon' },
+    { id: 'programmer', file: 'holidays/programmer.js', kit: true, api: 'ftProgrammer', title: 'День программиста', icon: '</>', color: '#3ddc84', order: 80,
+      when: programmerSeason, eggKey: 'ftProgrammerEgg', offKey: 'ftProgrammer' },
+    { id: 'halloween', file: 'holidays/halloween.js', kit: true, api: 'ftHalloween', title: 'Хэллоуин', icon: '☠︎', color: '#ff8a1e', order: 90,
+      when: days(10, 25, 10, 31), eggKey: 'ftHalloweenEgg', offKey: 'ftHalloween' },
+    { id: 'birthday', file: 'holidays/birthday.js', kit: true, api: 'ftBirthday', title: 'День рождения FolloTeam', icon: '✱', color: '#ff4f12', order: 95,
+      when: birthdaySeason, eggKey: 'ftBirthdayEgg', offKey: 'ftBirthday' },
     { id: 'winter', file: 'holidays/winter.js', api: 'ftWinter', title: 'Зима', icon: '❄︎', color: '#5b96f5', order: 10,
       months: [12, 1, 2], eggKey: 'ftWinterEgg', offKey: 'ftWinter' }
   ];
@@ -143,6 +186,14 @@
     if (loaded[h.id]) { if (cb) cb(); return true; }
     loaded[h.id] = true;
     if (h.id === 'winter' && CFG.winter && !window.FT_WINTER) window.FT_WINTER = CFG.winter;
+    // общий набор — раньше модуля (скрипты с async=false выполняются по порядку) · the shared kit goes first (async=false scripts run in order)
+    if (h.kit && !loaded.__kit) {
+      loaded.__kit = true;
+      var k = document.createElement('script');
+      k.src = BASE + 'holidays/kit.js?v=' + VERSION;
+      k.async = false;
+      (document.head || document.documentElement).appendChild(k);
+    }
     var s = document.createElement('script');
     s.src = BASE + h.file + '?v=' + VERSION;
     s.async = false;
@@ -262,6 +313,10 @@
     version: VERSION,
     base: BASE,
     list: function () { return cycle().map(function (h) { return h.id + (inSeason(h) ? ' (сезон · in season)' : ''); }); },
+    // сейчас сезон праздника? (нужно модулям) · is it the holiday's season now? (used by modules)
+    inSeason: function (id, d) { var h = byId(id); return !!(h && inSeason(h, d)); },
+    // все праздники с подписями (для демо) · all holidays with labels (for the demo)
+    info: function () { return cycle().map(function (h) { return { id: h.id, title: h.title, icon: h.icon, color: h.color, api: h.api, inSeason: inSeason(h) }; }); },
     active: function () { return current ? current.id : null; },
     load: function (id) { return load(byId(id)); },
     // выбрать праздник или 'off' и запомнить, как пасхалкой · choose a holiday or 'off' and remember it, like the egg does
