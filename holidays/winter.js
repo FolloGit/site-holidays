@@ -144,6 +144,7 @@
     btn = document.createElement('button');
     btn.type = 'button';
     btn.setAttribute('data-winter-ignore', '');
+    btn.setAttribute('data-holiday-btn', 'winter');      // загрузчик прячет кнопки неактивных праздников · the loader hides buttons of inactive holidays
     btn.style.cssText = 'position:fixed;left:14px;bottom:14px;z-index:2147483001;width:40px;height:40px;border-radius:14px;border:1px solid rgba(236,235,230,.16);background:rgba(17,19,22,.82);color:#ecebe6;font:18px/1 system-ui,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:background .2s,opacity .2s';
     btn.addEventListener('mouseenter', function () { btn.style.background = 'rgba(40,46,56,.92)'; });
     btn.addEventListener('mouseleave', function () { btn.style.background = 'rgba(17,19,22,.82)'; });

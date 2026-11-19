@@ -1,5 +1,5 @@
 /*!
- * site-holidays.js 1.1.1
+ * site-holidays.js 1.2.0
  * Праздничные режимы для сайтов / Holiday modes for websites — FolloTeam · https://folloteam.ru
  *
  * RU  Сайт подключает только этот файл, один раз и навсегда. Загрузчик смотрит на дату,
@@ -10,7 +10,7 @@
  *     the page URL and the easter egg, then loads the right holiday from holidays/.
  *     A new holiday is one entry in HOLIDAYS below plus a holidays/<id>.js file; sites stay untouched.
  *
- *   <script src="assets/holidays/site-holidays.js?v=1.1.1" defer></script>
+ *   <script src="assets/holidays/site-holidays.js?v=1.2.0" defer></script>
  *
  * Праздники / Holidays:
  *   valentine — День святого Валентина · Valentine's Day, Feb 10–15 (holidays/valentine.js)
@@ -23,9 +23,12 @@
  *   ?winter=1 | 0     — то же для зимы, старый вариант · legacy switch for winter
  *
  * Пасхалка / Easter egg:
- *   элемент с data-holiday-egg="winter" (или старым data-winter-egg) включает праздник вне сезона,
- *   повторное нажатие выключает · an element with data-holiday-egg="winter" (or legacy
- *   data-winter-egg) turns the holiday on out of season; pressing again turns it off.
+ *   элемент с data-holiday-egg (или старым data-winter-egg) перебирает праздники по кругу:
+ *   зима → китайский Новый год → День влюблённых → … → выкл → зима. Выбор запоминается до
+ *   смены сезона, потом снова решает календарь; siteHolidays.auto() сбрасывает выбор сразу.
+ *   An element with data-holiday-egg (or legacy data-winter-egg) cycles through the holidays:
+ *   winter → Lunar New Year → Valentine's → … → off → winter. The choice is remembered until
+ *   the season changes, then the calendar takes over again; siteHolidays.auto() resets it now.
  *
  * Настройки / Options (до подключения · before the script tag):
  *   window.SITE_HOLIDAYS = {
@@ -33,13 +36,13 @@
  *     winter: { ... }       // настройки модуля зимы · winter module options (= window.FT_WINTER)
  *   };
  *
- * Консоль / Console: siteHolidays.list() · active() · load('winter') · version
+ * Консоль / Console: siteHolidays.list() · active() · set('lunar' | 'off') · next() · auto() · version
  */
 (function () {
   'use strict';
   if (window.siteHolidays) return;
 
-  var VERSION = '1.1.1';
+  var VERSION = '1.2.0';
   var SCRIPT = document.currentScript;
   // папка загрузчика: модули и картинки лежат рядом · loader folder: modules and images live next to it
   var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/[^\/?#]*([?#].*)?$/, '') : 'assets/holidays/';
@@ -60,12 +63,28 @@
     return days >= -2 && days <= 7;
   }
 
+  // Список праздников · Holiday list
+  //   id    — имя праздника · holiday name
+  //   file  — модуль относительно загрузчика · module path relative to the loader
+  //   api   — объект модуля в window (нужны on() и off()) · module object in window (needs on() and off())
+  //   title, icon, color — подпись, значок и цвет для пасхалки · label, icon and colour for the easter egg
+  //   order — место в круге пасхалки · position in the easter-egg cycle
+  //   months | when(date) — сезон · season
+  //   eggKey, offKey — ключи localStorage самого модуля · the module's own localStorage keys
+  // Новый праздник попадает в круг пасхалки сам — достаточно строчки здесь.
+  // A new holiday joins the easter-egg cycle on its own — one entry here is enough.
   var HOLIDAYS = [
     // короткие праздники — раньше сезонных: первый подходящий побеждает · short holidays go before seasons: first match wins
-    { id: 'valentine', file: 'holidays/valentine.js', when: function (d) { return d.getMonth() === 1 && d.getDate() >= 10 && d.getDate() <= 15; }, eggKey: 'ftValentineEgg', offKey: 'ftValentine' },
-    { id: 'lunar', file: 'holidays/lunar.js', when: lunarSeason, eggKey: 'ftLunarEgg', offKey: 'ftLunar' },
-    { id: 'winter', file: 'holidays/winter.js', months: [12, 1, 2], eggKey: 'ftWinterEgg', offKey: 'ftWinter' }
+    { id: 'valentine', file: 'holidays/valentine.js', api: 'ftValentine', title: 'День влюблённых', icon: '♥', color: '#ff4f6d', order: 30,
+      when: function (d) { return d.getMonth() === 1 && d.getDate() >= 10 && d.getDate() <= 15; }, eggKey: 'ftValentineEgg', offKey: 'ftValentine' },
+    { id: 'lunar', file: 'holidays/lunar.js', api: 'ftLunar', title: 'Китайский Новый год', icon: '福', color: '#ffcc3f', order: 20,
+      when: lunarSeason, eggKey: 'ftLunarEgg', offKey: 'ftLunar' },
+    { id: 'winter', file: 'holidays/winter.js', api: 'ftWinter', title: 'Зима', icon: '❄︎', color: '#5b96f5', order: 10,
+      months: [12, 1, 2], eggKey: 'ftWinterEgg', offKey: 'ftWinter' }
   ];
+
+  // выбор посетителя пасхалкой: id праздника или 'off' · visitor's easter-egg choice: holiday id or 'off'
+  var CHOICE_KEY = 'siteHoliday';
 
   // localStorage без исключений (приватный режим и т. п.) · exception-safe localStorage
   function ls(k, v) {
@@ -78,8 +97,19 @@
     if (typeof h.when === 'function') return !!h.when(d);
     return h.months ? h.months.indexOf(d.getMonth() + 1) >= 0 : false;
   }
+  // круг пасхалки: все праздники сайта по order · easter-egg cycle: all of the site's holidays by order
+  function cycle() {
+    return HOLIDAYS.filter(function (h) { return !disabled(h); }).sort(function (a, b) { return (a.order || 99) - (b.order || 99); });
+  }
 
-  // Какой праздник показать: адрес → сезон → пасхалка · Which holiday to show: URL → season → easter egg
+  // Праздник, который сейчас по календарю (или 'none') · The holiday the calendar wants now (or 'none')
+  function seasonId() {
+    for (var i = 0; i < HOLIDAYS.length; i++) if (!disabled(HOLIDAYS[i]) && inSeason(HOLIDAYS[i])) return HOLIDAYS[i].id;
+    return 'none';
+  }
+
+  // Какой праздник показать: адрес → выбор пасхалкой → сезон → старые ключи пасхалки
+  // Which holiday to show: URL → easter-egg choice → season → legacy easter-egg keys
   function pickActive() {
     var q = location.search;
     if (/[?&]holiday=off\b/.test(q)) return null;
@@ -87,13 +117,21 @@
     if (m && byId(m[1])) return byId(m[1]);
     var w = /[?&]winter=(0|1)/.exec(q);
     if (w) return w[1] === '1' ? byId('winter') : null;
+    // выбор пасхалкой держится, пока не сменился сезон · the egg choice holds until the season changes
+    var c = (ls(CHOICE_KEY) || '').split('|');
+    if (c[0] && c[1] !== seasonId()) {
+      // сезон сменился: выбор и ключи модулей забываем — дальше решает календарь
+      // the season changed: forget the choice and the modules' keys — the calendar decides from now on
+      ls(CHOICE_KEY, null); c = [''];
+      for (var j = 0; j < HOLIDAYS.length; j++) { if (HOLIDAYS[j].offKey) ls(HOLIDAYS[j].offKey, null); if (HOLIDAYS[j].eggKey) ls(HOLIDAYS[j].eggKey, null); }
+    }
+    if (c[0] === 'off') return null;
+    if (c[0] && byId(c[0]) && !disabled(byId(c[0]))) return byId(c[0]);
     for (var i = 0; i < HOLIDAYS.length; i++) {
       var h = HOLIDAYS[i];
       if (disabled(h)) continue;
       // в сезон модуль грузится всегда (у него своя кнопка выкл/вкл) · in season always load (the module has its own on/off button)
       if (inSeason(h)) return h;
-      // вне сезона — только если включили пасхалкой · off season only if enabled via the easter egg
-      if (h.eggKey && ls(h.eggKey) === '1') return h;
     }
     return null;
   }
@@ -112,23 +150,91 @@
     (document.head || document.documentElement).appendChild(s);
     return true;
   }
+  function api(h) { return h && h.api ? window[h.api] : null; }
 
-  // Пасхалка до загрузки модуля: первое нажатие включает праздник и подгружает его, дальше
-  // нажатия обрабатывает сам модуль.
-  // Easter egg before the module is loaded: the first press enables the holiday and loads it,
-  // later presses are handled by the module itself.
+  // Сказать модулю «включайся»: его собственные ключи → «вкл» · Tell a module to start: its own keys → "on"
+  function prime(h) {
+    if (inSeason(h)) { if (h.offKey) ls(h.offKey, 'on'); }
+    else if (h.eggKey) ls(h.eggKey, '1');
+  }
+
+  // Текущий праздник страницы · The page's current holiday
+  var current = null;
+
+  // Переключить праздник без перезагрузки: старый выключаем, новый грузим или включаем
+  // Switch holidays without a reload: turn the old one off, load or turn on the new one
+  function choose(id, save) {
+    var next = id === 'off' ? null : byId(id);
+    if (next && disabled(next)) return;
+    if (current && current !== next) {
+      var a = api(current); if (a && a.off) a.off();
+      // это переключение, а не «выключил посетитель»: ключи модуля не оставляем · a switch, not the visitor's "off": drop the module's keys
+      if (current.offKey) ls(current.offKey, null);
+      if (current.eggKey) ls(current.eggKey, null);
+    }
+    current = next;
+    if (save !== false) ls(CHOICE_KEY, id + '|' + seasonId());
+    if (next) {
+      prime(next);
+      if (loaded[next.id]) { var b = api(next); if (b && b.on) b.on(); }
+      else load(next, function () {
+        // пока модуль грузился, могли нажать ещё раз · the egg may have been pressed again while loading
+        if (current !== next) { var c = api(next); if (c && c.off) c.off(); }
+      });
+    }
+    mark();
+  }
+
+  // Пометить страницу текущим праздником: значок на пасхалке и только его кнопка вкл/выкл
+  // Mark the page with the current holiday: icon on the egg and only its own on/off button
+  var markSt = document.createElement('style');
+  function mark() {
+    var id = current ? current.id : 'off';
+    document.documentElement.setAttribute('data-site-holiday', id);
+    markSt.textContent = current
+      ? '[data-holiday-btn]:not([data-holiday-btn="' + id + '"]){display:none!important}' +
+        'html[data-site-holiday="' + id + '"] [data-holiday-egg]::after,html[data-site-holiday="' + id + '"] [data-winter-egg]::after{content:"' + current.icon + '";color:' + current.color + ';text-shadow:0 0 10px ' + current.color + ';opacity:1;transform:none}'
+      : '[data-holiday-btn]{display:none!important}';
+  }
+
+  // Подпись у пасхалки после нажатия: «❄ ЗИМА · 1 / 3» или «ВЫКЛ»
+  // Label next to the egg after a press: "❄ WINTER · 1 / 3" or "OFF"
+  var tip = null, tipT = 0;
+  function toast(el) {
+    if (!document.body) return;
+    if (!tip) {
+      tip = document.createElement('div');
+      tip.setAttribute('data-winter-ignore', ''); tip.setAttribute('aria-live', 'polite');
+      tip.style.cssText = 'position:fixed;z-index:2147483002;pointer-events:none;padding:6px 10px;border-radius:10px;background:rgba(12,13,14,.92);border:1px solid rgba(236,235,230,.2);color:#ecebe6;font:700 12px/1.2 "JetBrains Mono",ui-monospace,monospace;letter-spacing:.06em;white-space:nowrap;transition:opacity .3s;opacity:0';
+      document.body.appendChild(tip);
+    }
+    var list = cycle(), i = current ? list.indexOf(current) : -1;
+    tip.textContent = current ? current.icon + ' ' + current.title.toUpperCase() + ' · ' + (i + 1) + ' / ' + list.length : 'ПРАЗДНИКИ ВЫКЛ';
+    tip.style.color = current ? current.color : '#bdbcb5';
+    var r = el.getBoundingClientRect();
+    tip.style.top = Math.round(r.bottom + 10) + 'px';
+    tip.style.left = Math.round(Math.max(8, Math.min(innerWidth - tip.offsetWidth - 8, r.left + r.width / 2 - tip.offsetWidth / 2))) + 'px';
+    tip.style.opacity = '1';
+    clearTimeout(tipT);
+    tipT = setTimeout(function () { tip.style.opacity = '0'; }, 1800);
+  }
+
+  // Пасхалка: каждое нажатие — следующий праздник по кругу, после последнего — выкл.
+  // Слушатель стоит раньше модулей, поэтому их собственные пасхалки не срабатывают.
+  // Easter egg: each press moves to the next holiday in the cycle, after the last one — off.
+  // This listener is registered before the modules, so their own egg handlers never fire.
   var EGG = '[data-holiday-egg],[data-winter-egg]';
   function onEgg(e) {
     var t = e.target && e.target.closest && e.target.closest(EGG);
     if (!t) return;
-    var h = byId(t.getAttribute('data-holiday-egg') || 'winter');
-    if (!h || loaded[h.id] || disabled(h)) return;
-    e.preventDefault(); e.stopPropagation();
-    if (!inSeason(h) && h.eggKey) ls(h.eggKey, '1');
-    if (inSeason(h) && h.offKey) ls(h.offKey, 'on');
-    document.removeEventListener('click', onEgg, true);
-    load(h);
+    e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+    var list = cycle();
+    if (!list.length) return;
+    var i = current ? list.indexOf(current) : -1;
+    choose(i + 1 < list.length ? list[i + 1].id : 'off');
+    toast(t);
   }
+  document.addEventListener('click', onEgg, true);
 
   // Невидимая кнопка-пасхалка: не занимает место и не показывает курсор, пока модуль не загружен.
   // Hidden easter-egg button: takes no space and shows no cursor until a module is loaded.
@@ -136,11 +242,18 @@
   st.textContent = '[data-holiday-egg],[data-winter-egg]{position:relative;align-self:center;display:inline-block;flex:none;width:28px;height:28px;margin:-6px 0 -6px -30px;padding:0;border:0;background:transparent;cursor:default;vertical-align:middle;-webkit-tap-highlight-color:transparent}' +
     '[data-holiday-egg]:focus,[data-winter-egg]:focus{outline:none}';
   (document.head || document.documentElement).appendChild(st);
+  (document.head || document.documentElement).appendChild(markSt);
 
   // Старт · Start
   function boot() {
+    // версия 1.0–1.1: пасхалка включала праздник ключом модуля — переносим в новый выбор
+    // versions 1.0–1.1: the egg enabled a holiday through the module key — move it to the new choice
+    if (!ls(CHOICE_KEY)) for (var i = 0; i < HOLIDAYS.length; i++) {
+      var o = HOLIDAYS[i];
+      if (o.eggKey && ls(o.eggKey) === '1' && !inSeason(o) && !disabled(o)) { ls(CHOICE_KEY, o.id + '|' + seasonId()); break; }
+    }
     var h = pickActive();
-    if (h) load(h); else document.addEventListener('click', onEgg, true);
+    if (h) choose(h.id, false); else mark();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 
@@ -148,8 +261,14 @@
   window.siteHolidays = {
     version: VERSION,
     base: BASE,
-    list: function () { return HOLIDAYS.map(function (h) { return h.id + (inSeason(h) ? ' (сезон · in season)' : ''); }); },
-    active: function () { var h = pickActive(); return h ? h.id : null; },
-    load: function (id) { return load(byId(id)); }
+    list: function () { return cycle().map(function (h) { return h.id + (inSeason(h) ? ' (сезон · in season)' : ''); }); },
+    active: function () { return current ? current.id : null; },
+    load: function (id) { return load(byId(id)); },
+    // выбрать праздник или 'off' и запомнить, как пасхалкой · choose a holiday or 'off' and remember it, like the egg does
+    set: function (id) { choose(id); return current ? current.id : null; },
+    // следующий по кругу · next in the cycle
+    next: function () { var l = cycle(), i = current ? l.indexOf(current) : -1; choose(i + 1 < l.length ? l[i + 1].id : 'off'); return current ? current.id : null; },
+    // забыть выбор пасхалкой: снова по календарю · forget the egg choice: back to the calendar
+    auto: function () { ls(CHOICE_KEY, null); }
   };
 })();
