@@ -1,5 +1,5 @@
 /*!
- * site-holidays.js 1.2.0
+ * site-holidays.js 1.3.0
  * Праздничные режимы для сайтов / Holiday modes for websites — FolloTeam · https://folloteam.ru
  *
  * RU  Сайт подключает только этот файл, один раз и навсегда. Загрузчик смотрит на дату,
@@ -10,7 +10,7 @@
  *     the page URL and the easter egg, then loads the right holiday from holidays/.
  *     A new holiday is one entry in HOLIDAYS below plus a holidays/<id>.js file; sites stay untouched.
  *
- *   <script src="assets/holidays/site-holidays.js?v=1.2.0" defer></script>
+ *   <script src="assets/holidays/site-holidays.js?v=1.3.0" defer></script>
  *
  * Праздники / Holidays:
  *   winter       — зима и Новый год · winter and New Year, Dec 1 – end of Feb (holidays/winter.js)
@@ -41,7 +41,8 @@
  * Настройки / Options (до подключения · before the script tag):
  *   window.SITE_HOLIDAYS = {
  *     off: ['winter'],      // праздники, не нужные этому сайту · holidays this site does not want
- *     winter: { ... }       // настройки модуля зимы · winter module options (= window.FT_WINTER)
+ *     winter: { ... },      // настройки модуля зимы · winter module options (= window.FT_WINTER)
+ *     birthday: { date: 'MM-DD' }  // дата дня рождения FolloTeam · FolloTeam's birthday date
  *   };
  *
  * Консоль / Console: siteHolidays.list() · active() · set('lunar' | 'off') · next() · auto() · version
@@ -50,7 +51,7 @@
   'use strict';
   if (window.siteHolidays) return;
 
-  var VERSION = '1.2.0';
+  var VERSION = '1.3.0';
   var SCRIPT = document.currentScript;
   // папка загрузчика: модули и картинки лежат рядом · loader folder: modules and images live next to it
   var BASE = SCRIPT && SCRIPT.src ? SCRIPT.src.replace(/[^\/?#]*([?#].*)?$/, '') : 'assets/holidays/';

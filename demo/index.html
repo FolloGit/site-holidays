@@ -50,10 +50,7 @@
       <button class="b l" onclick="window.ftWinter && ftWinter.weather('blizzard')">Метель</button>
       <button class="b l" onclick="window.ftWinter && ftWinter.weather('calm')">Тихий снег</button>
     </div>
-    <p>Другие праздники: <a href="?holiday=winter" style="color:#5b96f5">зима</a> ·
-       <a href="?holiday=valentine" style="color:#ff4f6d">День влюблённых</a> ·
-       <a href="?holiday=lunar" style="color:#ffcc3f">китайский Новый год</a> ·
-       <a href="?holiday=off" style="color:inherit">выключить всё</a></p>
+    <p id="hol-links">Праздники: </p>
     <div class="btns" id="hol-btns"></div>
   </section>
   <section class="grid">
@@ -65,16 +62,26 @@
 <footer><span class="logo" data-winter-logo="#ff4f12"><span>&gt;&gt;</span>FT<span>_</span></span> · футер</footer>
 <script src="../site-holidays.js" defer></script>
 <script>
-  // кнопки сценок и логотипов для Дня влюблённых и китайского Нового года · play and logo buttons for Valentine's and Lunar New Year
-  (function wait(n) {
-    var m = window.ftValentine ? [ftValentine, ['hearts', 'arrow']] : window.ftLunar ? [ftLunar, ['lanterns', 'coins']] : null;
-    if (!m || !m[0].events().length) { if (n < 50) setTimeout(function () { wait(n + 1); }, 200); return; }
-    var box = document.getElementById('hol-btns'), add = function (text, fn, light) {
-      var b = document.createElement('button'); b.className = 'b' + (light ? ' l' : ''); b.textContent = text; b.onclick = fn; box.appendChild(b);
-    };
-    m[0].events().forEach(function (e) { add(e.title, function () { m[0].event(e.id); document.querySelector('footer').scrollIntoView({ behavior: 'smooth' }); }); });
-    m[1].forEach(function (l) { add('Логотип: ' + l, function () { m[0].logo(l); }, true); });
-  })(0);
+  // ссылки на все праздники и кнопки сценок и логотипов включённого праздника (кроме зимы — у неё кнопки выше)
+  // links to every holiday plus play and logo buttons for the running one (winter has its own buttons above)
+  (function () {
+    var links = document.getElementById('hol-links'), box = document.getElementById('hol-btns'), shown = null;
+    function add(text, fn, light) { var b = document.createElement('button'); b.className = 'b' + (light ? ' l' : ''); b.textContent = text; b.onclick = fn; box.appendChild(b); }
+    function tick() {
+      if (window.siteHolidays && siteHolidays.info && !links.dataset.done) {
+        links.dataset.done = 1;
+        siteHolidays.info().forEach(function (h) { var a = document.createElement('a'); a.href = '?holiday=' + h.id; a.textContent = h.icon + ' ' + h.title; a.style.cssText = 'color:' + h.color + ';margin-right:14px;white-space:nowrap'; links.appendChild(a); });
+        var off = document.createElement('a'); off.href = '?holiday=off'; off.textContent = 'выключить всё'; off.style.color = 'inherit'; links.appendChild(off);
+      }
+      var m = window.siteHolidayKit && siteHolidayKit.active();
+      if (m === shown || (m && !m.events().length)) return;
+      shown = m; box.textContent = '';
+      if (!m) return;
+      m.events().forEach(function (e) { add(e.title, function () { m.event(e.id); document.querySelector('footer').scrollIntoView({ behavior: 'smooth' }); }); });
+      m.logos().forEach(function (l) { add('Логотип: ' + l, function () { m.logo(l); }, true); });
+    }
+    setInterval(tick, 400); tick();
+  })();
 </script>
 </body>
 </html>

@@ -156,7 +156,7 @@
       var g = a.folk(dir > 0 ? W + 20 : -20, { hat: 'hood' });
       bot.q = [{ k: 'run', x: m }, { k: 'say', icon: 'note', n: 40 }, { k: 'until', f: function () { return Math.abs(g.x - (m + dir * 24)) < 1; } },
         { k: 'face', x: function () { return g.x; } }, { k: 'say', icon: 'heart', n: 60 }, { k: 'dance', n: 120 }, { k: 'leave', dir: dir, sp: 0.9 }];
-      g.q = [{ k: 'run', x: m + dir * 24 }, { k: 'face', x: m }, { k: 'say', icon: 'q', n: 50 }, { k: 'wait', n: 60 }, { k: 'dance', n: 120 }, { k: 'say', icon: 'ha', n: 60 }, { k: 'leave', dir: -dir }];
+      g.q = [{ k: 'run', x: m + dir * 24 }, { k: 'face', x: m }, { k: 'until', f: function () { return Math.abs(bot.x - m) < 1; } }, { k: 'say', icon: 'q', n: 50 }, { k: 'wait', n: 60 }, { k: 'dance', n: 120 }, { k: 'say', icon: 'ha', n: 60 }, { k: 'leave', dir: -dir }];
     } }
   };
 

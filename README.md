@@ -28,13 +28,22 @@
 
 | id | Когда | Модуль |
 |---|---|---|
-| `valentine` | 10–15 февраля | [`holidays/valentine.js`](holidays/valentine.js) — День влюблённых: сердечки, шлейф за курсором, салют из сердец по клику, логотип с сердечками или стрелой Купидона; внизу человечки: свидание, букет, Купидон, валентинка, серенада |
-| `lunar` | за 2 дня до китайского Нового года и 7 дней после (даты 2026–2036 в модуле) | [`holidays/lunar.js`](holidays/lunar.js) — фонарики под шапкой, монетки и красные конверты, хлопушки по клику, логотип с фонариками или монетками; внизу человечки: танец дракона, хлопушки, красные конверты, танец льва, небесные фонарики |
+| `lunar` | за 2 дня до китайского Нового года и 7 дней после (даты 2026–2036) | [`lunar.js`](holidays/lunar.js) — фонарики под шапкой, монетки и конверты; гномики: танец дракона, змей-дракон, дракон гонится за толпой, хлопушки, красные конверты, танец льва, небесные фонарики |
+| `valentine` | 10–15 февраля | [`valentine.js`](holidays/valentine.js) — сердечки и шлейф за курсором; гномики: свидание на скамейке, букет, валентинка, кольцо, подарок с мишкой, Купидон, серенада |
+| `aprilfools` | 1 апреля | [`aprilfools.js`](holidays/aprilfools.js) — уточки и конфетти; гномики разыгрывают друг друга: банановая кожура, торт в лицо, подушка-пердушка, рыбка на спине, жонглёр, подарок-обманка |
+| `cosmonautics` | 10–13 апреля | [`cosmonautics.js`](holidays/cosmonautics.js) — звёзды, метеоры, спутник, ракета по клику; гномики: сборка и запуск ракеты, открытый космос, комета, НЛО, реактивный ранец |
+| `earth` | 20–23 апреля | [`earth.js`](holidays/earth.js) — листья, бабочки за курсором; гномики: сажают дерево (растёт и остаётся), уборка, кролики, бабочка, полив цветов, велосипед |
+| `moon` | 18–21 июля | [`moon.js`](holidays/moon.js) — Земля в небе, лунная пыль; лунный грунт и гномики в скафандрах: посадка и флаг, прыжки, луноход, гольф, фото Земли |
+| `programmer` | 256-й день года ±1 (12–14 сентября) | [`programmer.js`](holidays/programmer.js) — колонки битов, баги на экране (клик исправляет); гномики: охота на баг, кофе, релиз в пятницу, резиновая уточка, робот |
+| `halloween` | 25–31 октября | [`halloween.js`](holidays/halloween.js) — летучие мыши и привидения; гномики в костюмах: сладость или гадость, засада, ведьма на метле, резьба по тыкве, парад привидений, стая мышей |
+| `birthday` | день рождения FolloTeam ±1 день — дата пока не задана (`SITE_HOLIDAYS.birthday.date = 'ММ-ДД'` или `BIRTHDAY` в загрузчике) | [`birthday.js`](holidays/birthday.js) — конфетти и шары; торт со свечами, гномики: задувают свечи, подарки, шарики, паровозик, пиньята, хлопушка |
 | `winter` | 1 декабря – конец февраля | [`holidays/winter.js`](holidays/winter.js) — зима и Новый год |
 
 Когда даты совпадают, побеждает праздник выше в таблице: в День влюблённых и в китайский Новый год вместо зимы показывается он.
 
-Общие файлы: [`holidays/scene.js`](holidays/scene.js) — движок сцены внизу страницы (земля, человечки, сценки; человечки смотрят на курсор, от клика подпрыгивают, от трёх быстрых кликов падают), [`holidays/logo.js`](holidays/logo.js) — праздничный SVG поверх текстового знака `>>FT_`. Модули праздников подгружают их сами.
+Все праздники, кроме зимы, работают на общем [`holidays/kit.js`](holidays/kit.js): кнопка вкл/выкл, иконка вкладки, праздничный логотип поверх «>>FT_», слой эффектов и сцена внизу страницы. На сцене — **гномики, наш народ**: те же, что зимой, только одеты под праздник (колпак ведьмы, шлем космонавта, наушники, праздничный колпак, костюм привидения, робота…). Они смотрят на курсор, от клика подпрыгивают, от трёх быстрых кликов падают. Загрузчик подгружает `kit.js` сам.
+
+У каждого праздника два варианта логотипа (`img/<id>-logo-*.svg`, случайный при включении). Их рисует [`tools/make-logos.py`](tools/make-logos.py); с `--brand <папка>` он же раскладывает их в папку брендинга FolloTeam в трёх цветах, с фоном и без, горизонтальной версией и PNG.
 
 ### Быстрый старт
 
@@ -46,7 +55,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 На каждой странице перед `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.2.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.3.0" defer></script>
 ```
 
 Готово: с 1 декабря на сайте пойдёт снег. Проверить сейчас — открыть страницу с `?holiday=winter`.
@@ -58,7 +67,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 
 ```sh
 sh tools/update-holidays.sh            # последняя версия
-sh tools/update-holidays.sh v1.2.0     # конкретная версия
+sh tools/update-holidays.sh v1.3.0     # конкретная версия
 ```
 
 Скрипт держит копию этого репозитория рядом с сайтом (`../site-holidays`), ставит файлы в `assets/holidays/`
@@ -141,9 +150,9 @@ python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winte
 
 ### Как добавить праздник
 
-1. Модуль `holidays/<id>.js` — самостоятельный скрипт (за образец — `winter.js`).
-2. Строчка в списке `HOLIDAYS` в `site-holidays.js`: `{ id, file, months }` или `when: function (date) {…}` для точных дат.
-3. Картинки — в `img/`, кнопки — в демо.
+1. Модуль `holidays/<id>.js` на общем наборе: `siteHolidayKit.define({ id, global, button, favicon, logos, fx, scene })` — за образец любой из `valentine.js`, `halloween.js`, `earth.js`. Эффекты — в `fx`, гномики и сценки — в `scene.events`.
+2. Строчка в `HOLIDAYS` в `site-holidays.js`: `{ id, file, kit: true, api, title, icon, color, order, when }`.
+3. Логотипы — функция в `tools/make-logos.py` (+ папка в `FOLDERS`), затем `python3 tools/make-logos.py`. Демо подхватит праздник само.
 
 ### Выпуск версии
 
@@ -173,13 +182,22 @@ and a mini-game. They are developed here, and sites pull ready-made versions wit
 
 | id | When | Module |
 |---|---|---|
-| `valentine` | February 10–15 | [`holidays/valentine.js`](holidays/valentine.js) — Valentine's Day: hearts, a cursor trail, heart bursts on click, a logo with hearts or Cupid's arrow; people at the bottom: a date, flowers, Cupid, a valentine card, a serenade |
-| `lunar` | 2 days before Lunar New Year to 7 days after (dates for 2026–2036 in the module) | [`holidays/lunar.js`](holidays/lunar.js) — lanterns under the header, coins and red envelopes, firecrackers on click, a logo with lanterns or coins; people at the bottom: dragon dance, firecrackers, red envelopes, lion dance, sky lanterns |
+| `lunar` | 2 days before Lunar New Year to 7 days after (dates for 2026–2036) | [`lunar.js`](holidays/lunar.js) — lanterns under the header, coins and envelopes; gnomes: dragon dance, a dragon kite, a dragon chasing a crowd, firecrackers, red envelopes, lion dance, sky lanterns |
+| `valentine` | February 10–15 | [`valentine.js`](holidays/valentine.js) — hearts and a cursor trail; gnomes: a date on a bench, flowers, a card, a ring, a gift with a teddy, Cupid, a serenade |
+| `aprilfools` | April 1 | [`aprilfools.js`](holidays/aprilfools.js) — ducks and confetti; gnomes prank each other: a banana peel, a pie, a whoopee cushion, a paper fish, a juggler, a fake gift |
+| `cosmonautics` | April 10–13 | [`cosmonautics.js`](holidays/cosmonautics.js) — stars, meteors, a satellite, a rocket on click; gnomes: build and launch a rocket, a spacewalk, a comet, a UFO, a jetpack |
+| `earth` | April 20–23 | [`earth.js`](holidays/earth.js) — leaves, butterflies following the cursor; gnomes: plant a tree (it stays), litter pickup, bunnies, a butterfly, watering, a bicycle |
+| `moon` | July 18–21 | [`moon.js`](holidays/moon.js) — Earth in the sky, moon dust; lunar soil and gnomes in spacesuits: a landing and a flag, hops, a rover, golf, an Earth photo |
+| `programmer` | day 256 ±1 (Sep 12–14) | [`programmer.js`](holidays/programmer.js) — columns of bits, bugs on screen (click fixes them); gnomes: a bug hunt, coffee, a Friday deploy, a rubber duck, a robot |
+| `halloween` | October 25–31 | [`halloween.js`](holidays/halloween.js) — bats and ghosts; gnomes in costumes: trick-or-treat, an ambush, a witch on a broom, pumpkin carving, a ghost parade, a bat swarm |
+| `birthday` | FolloTeam's birthday ±1 day — no date yet (`SITE_HOLIDAYS.birthday.date = 'MM-DD'` or `BIRTHDAY` in the loader) | [`birthday.js`](holidays/birthday.js) — confetti and balloons; a cake with candles, gnomes: blow out candles, gifts, balloons, a conga line, a piñata, a party popper |
 | `winter` | December 1 – end of February | [`holidays/winter.js`](holidays/winter.js) — winter and New Year |
 
 When dates overlap, the holiday higher in the table wins: on Valentine's Day and Lunar New Year it replaces winter.
 
-Shared files: [`holidays/scene.js`](holidays/scene.js) is the bottom scene engine (ground, people, plays; people turn to the cursor, hop on click, fall over after three quick clicks), [`holidays/logo.js`](holidays/logo.js) lays a holiday SVG over the `>>FT_` text mark. Holiday modules load them on their own.
+Every holiday except winter runs on the shared [`holidays/kit.js`](holidays/kit.js): the on/off button, the tab icon, the festive logo over ">>FT_", an effects layer and the bottom scene. The scene has **gnomes, our folk**: the same as in winter, only dressed for the occasion (a witch hat, a space helmet, headphones, a party hat, a ghost or robot costume…). They turn to the cursor, hop on click and fall over after three quick clicks. The loader loads `kit.js` on its own.
+
+Each holiday has two logo variants (`img/<id>-logo-*.svg`, a random one on start). [`tools/make-logos.py`](tools/make-logos.py) draws them; with `--brand <folder>` it also lays them out in the FolloTeam brand folder in three colour schemes, with and without a background, a horizontal version and PNGs.
 
 ### Quick start
 
@@ -191,7 +209,7 @@ git clone https://github.com/FolloGit/site-holidays.git
 On every page, before `</body>`:
 
 ```html
-<script src="assets/holidays/site-holidays.js?v=1.2.0" defer></script>
+<script src="assets/holidays/site-holidays.js?v=1.3.0" defer></script>
 ```
 
 That's it: from December 1 it snows on the site. To check it now, open a page with `?holiday=winter`.
@@ -203,7 +221,7 @@ Add [`tools/update-holidays.sh`](https://github.com/FolloTeam/site/blob/Prod/too
 
 ```sh
 sh tools/update-holidays.sh            # latest version
-sh tools/update-holidays.sh v1.2.0     # a specific version
+sh tools/update-holidays.sh v1.3.0     # a specific version
 ```
 
 The script keeps a copy of this repository next to the site (`../site-holidays`), installs the files into
@@ -286,9 +304,9 @@ python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winte
 
 ### Adding a holiday
 
-1. Create a module `holidays/<id>.js`, a self-contained script (use `winter.js` as the template).
-2. Add an entry to `HOLIDAYS` in `site-holidays.js`: `{ id, file, months }`, or `when: function (date) {…}` for exact dates.
-3. Put images in `img/` and add buttons to the demo.
+1. Write `holidays/<id>.js` on the shared kit: `siteHolidayKit.define({ id, global, button, favicon, logos, fx, scene })` — use `valentine.js`, `halloween.js` or `earth.js` as a template. Effects go in `fx`, gnomes and plays in `scene.events`.
+2. Add an entry to `HOLIDAYS` in `site-holidays.js`: `{ id, file, kit: true, api, title, icon, color, order, when }`.
+3. Logos: a function in `tools/make-logos.py` (+ a folder in `FOLDERS`), then `python3 tools/make-logos.py`. The demo picks the holiday up by itself.
 
 ### Releasing a version
 
@@ -304,15 +322,25 @@ python3 -m http.server 8092      # → http://localhost:8092/demo/?holiday=winte
 
 ```
 site-holidays.js    загрузчик — единственное, что подключают сайты · the loader, the only file sites include
-holidays/           модули праздников · holiday modules (winter.js, valentine.js, lunar.js, scene.js, logo.js)
+holidays/           модули праздников и общий kit.js · holiday modules and the shared kit.js
 img/                картинки праздников · holiday images
 demo/index.html     демо-страница · demo page
 docs/               картинки для README · README images
 install.sh          установка на сайт · install into a site
+tools/make-logos.py праздничные логотипы для сайта и папки брендинга · holiday logos for the site and the brand folder
 ```
 
 ## Версии · Versions
 
+- **1.3.0**
+  - Шесть новых праздников: День смеха, День космонавтики, День Земли, День Луны, День программиста, Хэллоуин и день рождения FolloTeam (ждёт дату). У каждого — эффекты, сценки с гномиками и два логотипа.
+  - Общий `holidays/kit.js` вместо `scene.js` и `logo.js`; на сцене всех праздников — гномики, как зимой, в праздничной одежде.
+  - День влюблённых 2.0: скамейка, кольцо, подарок с мишкой, валентинка, Купидон влюбляет гномика. Китайский Новый год 2.0: змей-дракон и дракон, который гонится за толпой гномиков.
+  - `tools/make-logos.py`: логотипы для сайта и папки брендинга (три цвета, с фоном и без, горизонтальная версия, PNG).
+  - Six new holidays: April Fools', Human Space Flight Day, Earth Day, Moon Day, Programmer's Day, Halloween and FolloTeam's birthday (waiting for a date). Each has effects, gnome plays and two logos.
+  - A shared `holidays/kit.js` replaces `scene.js` and `logo.js`; every holiday's scene has gnomes like in winter, dressed for the occasion.
+  - Valentine's 2.0: a bench, a ring, a gift with a teddy, a card, Cupid makes a gnome fall in love. Lunar New Year 2.0: a dragon kite and a dragon chasing a crowd of gnomes.
+  - `tools/make-logos.py`: logos for the site and the brand folder (three schemes, with and without a background, horizontal, PNG).
 - **1.2.0**
   - Пасхалка перебирает все праздники по кругу и выключает их; новый праздник из списка `HOLIDAYS` попадает в круг сам (поля `api`, `title`, `icon`, `color`, `order`). Переключение без перезагрузки, на пасхалке — значок текущего праздника, видна только его кнопка вкл/выкл. Выбор (`localStorage.siteHoliday`) держится до смены сезона. Консоль: `siteHolidays.set('lunar' | 'off')`, `next()`, `auto()`.
   - The easter egg cycles through all holidays and turns them off; a new holiday in `HOLIDAYS` joins the cycle on its own (`api`, `title`, `icon`, `color`, `order` fields). Switching needs no reload, the egg shows the current holiday's icon and only its on/off button is visible. The choice (`localStorage.siteHoliday`) holds until the season changes. Console: `siteHolidays.set('lunar' | 'off')`, `next()`, `auto()`.
